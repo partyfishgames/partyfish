@@ -14,7 +14,8 @@
     "build-static": "npm run build-client && npm run build-html",
     "build": "npm run build-server && npm run build-static",
     "prestart": "npm run build",
-    "start": "node dist/server"
+    "start": "node dist/server",
+    "test": "echo 'no test specified; passing' "
   },
   "author": "",
   "license": "ISC",
