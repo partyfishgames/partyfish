@@ -7,6 +7,7 @@ export interface ServerToHostEvents {
 export type ServerToClientEvents = ServerToPlayerEvents & ServerToHostEvents;
 
 export interface PlayerToServerEvents {
+    "join_game": (username: string, room: string) => void,
 }
 
 export interface HostToServerEvents {
@@ -27,6 +28,7 @@ export enum ClientRole {
 
 // stores information about socket
 export interface SocketData {
-    room: number;
     role: ClientRole;
+    username: string;
+    room: string;
 }

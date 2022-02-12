@@ -15,6 +15,24 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 io.on("connection", (socket) => {
     console.log("player has connected");
     socket.data.role = ClientRole.None;
+
+    socket.data.room = "ABCD";
+    socket.join("ABCD");
+    socket.data.username = "gamergordles";
+
+    socket.on("join_game", (username, room) => {
+        socket.data.username = username;
+        socket.data.role = ClientRole.Player;
+    });
+
+    const rooms = io.of('/').adapter.sids.get(socket.id);
+    console.log(rooms);
+
+    const playersInRoom = io.of('/').adapter.rooms.get(socket.data.room as string);
+    console.log(Array.from(playersInRoom as Set<string>).map((sid) => io.sockets.sockets.get(sid)?.data.username));
 });
+
+
+
 
 console.log("server started");
