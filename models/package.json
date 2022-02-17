@@ -1,0 +1,9 @@
+{
+  "name": "@types/models",
+  "version": "1.0.0",
+  "description": "TypeScript networking models for interaction between client and server",
+  "types": "index.d.ts",
+  "scripts": {},
+  "author": "",
+  "license": "ISC"
+}
