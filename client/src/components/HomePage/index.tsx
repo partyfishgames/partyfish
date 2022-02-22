@@ -3,10 +3,12 @@ import React, { useContext, useEffect } from "react";
 import gameContext from "../../gameContext";
 import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
+import { useAppDispatch } from "../../hooks";
 
 interface IHostRoomProps { }
 
 export function HomePage(props: IHostRoomProps) {
+    const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
     // Grab the game context variables and their setter methods
     const { setInRoom, setIsHost, roomCode, setRoomCode, pUsername, setPUsername, } = useContext(gameContext);
@@ -42,6 +44,10 @@ export function HomePage(props: IHostRoomProps) {
             setInRoom(true);
             setRoomCode(joined);
             setIsHost(true);
+
+            // Update global redux state's room code and set user to 'Host' 
+            dispatch({type: 'gameStats/setGameCode', payload: joined});
+            dispatch({type: 'player/setUsername', payload: 'Host'});
         }
     }
 
@@ -59,6 +65,10 @@ export function HomePage(props: IHostRoomProps) {
 
         if (joined) {
             setInRoom(true);
+
+            // Update global redux state's room code and user's name
+            dispatch({type: 'gameStats/setGameCode', payload: joined});
+            dispatch({type: 'player/setUsername', payload: pUsername});
         }
     }
 
