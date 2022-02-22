@@ -25,5 +25,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: cd server
     - run: npm ci
     - run: npm run dry-build
