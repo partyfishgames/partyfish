@@ -46,8 +46,8 @@ export function HomePage(props: IHostRoomProps) {
             setIsHost(true);
 
             // Update global redux state's room code and set user to 'Host' 
-            dispatch({type: 'gameCode/set', payload: joined});
-            dispatch({type: 'player/set', payload: 'Host'});
+            dispatch({type: 'gameStats/setGameCode', payload: joined});
+            dispatch({type: 'player/setUsername', payload: 'Host'});
         }
     }
 
@@ -67,8 +67,8 @@ export function HomePage(props: IHostRoomProps) {
             setInRoom(true);
 
             // Update global redux state's room code and user's name
-            dispatch({type: 'gameCode/set', payload: joined});
-            dispatch({type: 'player/set', payload: pUsername});
+            dispatch({type: 'gameStats/setGameCode', payload: joined});
+            dispatch({type: 'player/setUsername', payload: pUsername});
         }
     }
 

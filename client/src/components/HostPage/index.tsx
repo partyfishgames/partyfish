@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { useContext, useState, useEffect } from "react";
 import gameContext from "../../gameContext";
 import { useAppSelector } from "../../hooks";
@@ -27,6 +27,7 @@ export function HostPage(props: IHostPageProps) {
             gameService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
                 dispatch({type: 'playerList/set', payload: playerNames}); // Dispatch action to change playerList
+                dispatch({type: 'gameStats/setNumPlayers', payload: playerNames.length}); // Dispatch action to change playerList
             });
     };
 
@@ -51,6 +52,9 @@ export function HostPage(props: IHostPageProps) {
                     <h4>Room Code</h4>
                     <h1>{roomCode}</h1>
                     <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
+                    <Button variant={playerList.length > 3 ? "contained" : "outlined"} disabled={playerList.length > 3 ? false : true}> 
+                        Start Game
+                    </Button>
                 </Grid>
                 <Grid item xs={5}>
                     <h2>Players</h2>

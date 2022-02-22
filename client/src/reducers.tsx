@@ -1,8 +1,12 @@
 // Initial Global States 
-const initialGameCode: string = ''
+const initialGameStats: any = {
+    gameCode: '',
+    gameType: '',
+    numPlayers: 0,
+}
+const initialPlayer: string = ''
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
-const initialPlayer: string = ''
 
 // Reducer to respond to actions regarding the list of players 
 export function playerListReducer(state = initialPlayerList, action: any) {
@@ -15,12 +19,15 @@ export function playerListReducer(state = initialPlayerList, action: any) {
     }
 }
 
-// Reducer to respond to actions regarding the game code 
-export function gameCodeReducer(state = initialGameCode, action: any) {
+// Reducer to respond to actions regarding the game's logistics 
+export function gameStatsReducer(state = initialGameStats, action: any) {
     switch (action.type) {
-        case 'gameCode/set': {
-          return action.payload
-        }
+        case 'gameStats/setGameCode': 
+          return { ...state, gameCode: action.payload}
+        case 'gameStats/setGameType': 
+            return { ...state, gameType: action.payload}
+        case 'gameStats/setNumPlayers': 
+            return { ...state, numPlayers: action.payload}
         default:
             return state
     }
@@ -29,7 +36,7 @@ export function gameCodeReducer(state = initialGameCode, action: any) {
 // Reducer to respond to actions regarding the player (either player username or 'Host') 
 export function playerReducer(state = initialPlayer, action: any) {
     switch (action.type) {
-        case 'player/set': {
+        case 'player/setUsername': {
           return action.payload
         }
         default:
