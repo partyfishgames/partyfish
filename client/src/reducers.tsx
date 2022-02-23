@@ -1,9 +1,11 @@
-// Initial Global States 
+// Initial Global Redux States 
+
 const initialGameStats: any = {
     gameCode: '',
     gameType: '',
     numPlayers: 0,
 }
+
 const initialPlayer: string = ''
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
