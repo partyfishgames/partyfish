@@ -1,6 +1,6 @@
 import { Button, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
-import gameService from "../../services/gameService";
+import roomService from "../../services/roomService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
@@ -31,9 +31,9 @@ export function HomePage() {
         // Prevent the page from refreshing
         e.preventDefault();
 
-        // Get our socket and tell the server to host a room by calling our gameService.hostRoom function
+        // Get our socket and tell the server to host a room by calling our roomService.hostRoom function
         const socket: any = socketService.socket;
-        const joined = await gameService.hostRoom(socket).catch((err) => {
+        const joined = await roomService.hostRoom(socket).catch((err) => {
             alert(err);
         });
 
@@ -54,7 +54,7 @@ export function HomePage() {
 
         // Get our socket and tell the server to join a room with the current id and our username
         const socket: any = socketService.socket;
-        const joined = await gameService.joinRoom(socket, playerRoomCode, pUsername).catch((err) => {
+        const joined = await roomService.joinRoom(socket, playerRoomCode, pUsername).catch((err) => {
             alert(err);
         });
 

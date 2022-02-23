@@ -1,7 +1,7 @@
 import { Button, Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useAppSelector } from "../../hooks";
-import gameService from "../../services/gameService";
+import roomService from "../../services/roomService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
@@ -19,10 +19,10 @@ export function HostPage() {
     // Grab our game code from the global state
     const gameCode = useAppSelector(selectGameCode);
 
-    // Listen for the player join event from gameService and update our state if one joins
+    // Listen for the player join event from roomService and update our state if one joins
     const handlePlayerJoin = () => {
         if (socketService.socket)
-            gameService.onPlayerJoin(socketService.socket, (playerNames) => {
+            roomService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
                 dispatch({type: 'playerList/set', payload: playerNames}); // Dispatch action to change playerList
                 dispatch({type: 'gameStats/setNumPlayers', payload: playerNames.length}); // Dispatch action to change playerList
