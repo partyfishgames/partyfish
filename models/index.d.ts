@@ -10,6 +10,7 @@ export interface ServerToClientEvents {
     send_question: (question: string[]) => void,
     start_game_error: ({error: string}) => void,
     update_answer: (id: string, answerId: number) => void,
+    answer_received: () => void,
     send_result: (isCorrect: boolean) => void,
 }
 

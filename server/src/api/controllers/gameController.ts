@@ -28,7 +28,9 @@ export class GameController {
         // Get game room to broadcast question to
         const gameRoom = getSocketGameRoom(socket);
 
-        socket.to(gameRoom).emit("send_question", question);
+        // io.in(gameRoom) instead of socket.to(gameRoom) because we want to make
+        // sure the host hears the new question too
+        io.in(gameRoom).emit("send_question", question);
     }
 
     // Basic logic to start round and select a new question
@@ -41,6 +43,7 @@ export class GameController {
         // Get game room to broadcast question to
         const gameRoom = getSocketGameRoom(socket);
 
+        socket.emit("answer_received");
         socket.to(gameRoom).emit("update_answer", socket.id.toString(), parseInt(answer_id));
     }
 
