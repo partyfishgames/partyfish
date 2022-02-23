@@ -1,23 +1,20 @@
 import { Button, Grid, TextField } from "@mui/material";
-import React, { useContext, useEffect } from "react";
-import gameContext from "../../gameContext";
+import React, { useState } from "react";
 import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
-interface IHostRoomProps { }
-
-export function HomePage(props: IHostRoomProps) {
+export function HomePage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
-    // Grab the game context variables and their setter methods
-    const { setInRoom, setIsHost, roomCode, setRoomCode, pUsername, setPUsername, } = useContext(gameContext);
+    const [ playerRoomCode, setPlayerRoomCode ] = useState('');
+    const [ pUsername, setPUsername ] = useState('');
 
     // This function is called when the user types something in the room code textfield
     // and updates the state
     const handleRoomCodeChange = (e: React.ChangeEvent<any>) => {
         console.log(e.target.value);
-        setRoomCode(e.target.value);
+        setPlayerRoomCode(e.target.value);
     }
 
     // This function is called when the user types something in the username textfield
@@ -41,9 +38,6 @@ export function HomePage(props: IHostRoomProps) {
 
         // Update state variables to display the new host screen
         if (joined) {
-            setInRoom(true);
-            setRoomCode(joined);
-            setIsHost(true);
 
             // Update global redux state's room code and set user to 'Host' 
             dispatch({type: 'gameStats/setGameCode', payload: joined});
@@ -59,22 +53,17 @@ export function HomePage(props: IHostRoomProps) {
 
         // Get our socket and tell the server to join a room with the current id and our username
         const socket: any = socketService.socket;
-        const joined = await gameService.joinRoom(socket, roomCode, pUsername).catch((err) => {
+        const joined = await gameService.joinRoom(socket, playerRoomCode, pUsername).catch((err) => {
             alert(err);
         });
 
         if (joined) {
-            setInRoom(true);
 
             // Update global redux state's room code and user's name
             dispatch({type: 'gameStats/setGameCode', payload: joined});
             dispatch({type: 'player/setUsername', payload: pUsername});
         }
     }
-
-    useEffect(() => {
-        
-      }, []);
 
     return (
         <div style={{ textAlign: "center" }}>
@@ -101,7 +90,7 @@ export function HomePage(props: IHostRoomProps) {
                 <Grid item xs={3}>
                     <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
                         <Grid item>
-                            <TextField value={roomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
+                            <TextField value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
                         </Grid>
                         <Grid item>
                             <TextField value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />

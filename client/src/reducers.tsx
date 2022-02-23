@@ -4,6 +4,7 @@ const initialGameStats: any = {
     gameType: '',
     numPlayers: 0,
 }
+
 const initialPlayer: string = ''
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
@@ -28,6 +29,8 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, gameType: action.payload}
         case 'gameStats/setNumPlayers': 
             return { ...state, numPlayers: action.payload}
+        case 'gameStats/setIsHost':
+            return { ...state, isHost: action.payload}
         default:
             return state
     }
