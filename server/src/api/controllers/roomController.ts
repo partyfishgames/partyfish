@@ -1,63 +1,10 @@
 import { ConnectedSocket, MessageBody, OnMessage, OnDisconnect, SocketController, SocketIO } from "socket-controllers";
 import { Server, Socket } from "socket.io";
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "models";
+import { generateNewRoomId, getActiveRooms, getSocketsInRoom } from "../utils/roomUtils";
 
 @SocketController()
 export class RoomController {
-
-    // Simple function to generate a 4 letter room id
-    private generateNewRoomId(): string {
-        const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-        let new_room_id = "";
-        let randint = 0
-
-        for(let i=0; i<4; i++) {
-            randint = Math.floor(Math.random() * 25);
-            new_room_id = new_room_id + letters[randint]
-        }
-
-        return new_room_id;
-    }
-
-    // This function returns an array containing the ids of all active rooms that can be joined
-    private getActiveRooms(@SocketIO() io: Server): Array<string> {
-        // Convert map into 2D list:
-        // ==> [['4ziBKG9XFS06NdtVAAAH', Set(1)], ['room1', Set(2)], ...]
-        const rooms = Array.from(io.sockets.adapter.rooms);
-
-        // Filter rooms whose name exist in set:
-        // ==> [['room1', Set(2)], ['room2', Set(2)]]
-        const filtered = rooms.filter(room => !room[1].has(room[0]))
-
-        // Return only the room name: 
-        // ==> ['room1', 'room2']
-        const room_ids = filtered.map(i => i[0]);
-
-        return room_ids;
-    }
-
-    // This function takes in a socket and returns what game room ID it is in
-    private getSocketGameRoom(@SocketIO() socket: Socket): string {
-        const socketRooms = Array.from(socket.rooms.values()).filter((r) => r!== socket.id);
-        const gameRoom = socketRooms && socketRooms[0];
-        
-        return gameRoom;
-    }
-
-    // This function takes in the server and a roomId and returns all socket usernames that are in it
-    private getSocketsInRoom(io: Server, roomId: string): Array<string> {
-
-        // Get socket ids connected to the room
-        const playersInRoom = Array.from(io.sockets.adapter.rooms.get(roomId));
-
-        // Get each sockets username from their id
-        const usernames = playersInRoom.map((sid) => io.sockets.sockets.get(sid).data.username);
-
-        // Filter out undefined entries (the host)
-        const valid_usernames = usernames.filter((name) => name != undefined);
-
-        return valid_usernames;
-    }
 
     // Basic logic to set up a new room to host when the client presses the "Host" button on the homepage
     @OnMessage("host_room")
@@ -65,7 +12,7 @@ export class RoomController {
 
         console.log("Host room request from: ", socket.id);
 
-        const new_room_id = this.generateNewRoomId();
+        const new_room_id = generateNewRoomId();
 
         console.log("New room generated: ", new_room_id);
 
@@ -78,7 +25,7 @@ export class RoomController {
     public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket<ClientToServerEvents,ServerToClientEvents,InterServerEvents,SocketData>, @MessageBody() message: any) {
         
         console.log("New user {", message.username, "} joining room: ", message.roomId);
-        const activeRooms = this.getActiveRooms(io);
+        const activeRooms = getActiveRooms(io);
 
         if (!activeRooms.includes(message.roomId)) {
             // If room doesn't exist, then return error
@@ -95,7 +42,7 @@ export class RoomController {
             socket.emit("room_join_success");
 
             // Get new list of players in the room (including new one) and send to host
-            const playerNames = this.getSocketsInRoom(io, message.roomId);
+            const playerNames = getSocketsInRoom(io, message.roomId);
             socket.to(message.roomId).emit("on_player_join", playerNames)
         }
     }
@@ -106,7 +53,7 @@ export class RoomController {
         console.log("Socket disconnected: ", socket.id);
 
         // Get all sockets and people in the room
-        const playerNames = this.getSocketsInRoom(io, socket.data.roomId);
+        const playerNames = getSocketsInRoom(io, socket.data.roomId);
         socket.to(socket.data.roomId).emit("on_player_join", playerNames)
     }
 }
