@@ -6,7 +6,7 @@ import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
-const selectGameStats = (state: { gameStats: any }) => state.gameStats;
+const selectGameCode = (state: { gameStats: any }) => state.gameStats.gameCode; // select for game stats
 
 export function HostPage() {
 
@@ -16,8 +16,8 @@ export function HostPage() {
     // we add a new player the page can grab this and change what is displayed
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
 
-    // Grab our stats from the global state
-    const gameStats = useAppSelector(selectGameStats);
+    // Grab our game code from the global state
+    const gameCode = useAppSelector(selectGameCode);
 
     // Listen for the player join event from gameService and update our state if one joins
     const handlePlayerJoin = () => {
@@ -48,7 +48,7 @@ export function HostPage() {
             >
                 <Grid item xs={5}>
                     <h4>Room Code</h4>
-                    <h1>{gameStats.gameCode}</h1>
+                    <h1>{gameCode}</h1>
                     <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
                     <Button variant={playerList.length > 3 ? "contained" : "outlined"} disabled={playerList.length > 3 ? false : true}> 
                         Start Game

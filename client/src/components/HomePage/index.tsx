@@ -7,6 +7,7 @@ import { useAppDispatch } from "../../hooks";
 export function HomePage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
+    // Variables to hold the intermediate entry while the user is typing
     const [ playerRoomCode, setPlayerRoomCode ] = useState('');
     const [ pUsername, setPUsername ] = useState('');
 

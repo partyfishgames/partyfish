@@ -1,4 +1,5 @@
-// Initial Global States 
+// Initial Global Redux States 
+
 const initialGameStats: any = {
     gameCode: '',
     gameType: '',
@@ -29,8 +30,6 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, gameType: action.payload}
         case 'gameStats/setNumPlayers': 
             return { ...state, numPlayers: action.payload}
-        case 'gameStats/setIsHost':
-            return { ...state, isHost: action.payload}
         default:
             return state
     }
