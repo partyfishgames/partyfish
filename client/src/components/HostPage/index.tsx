@@ -1,16 +1,14 @@
 import { Button, Grid } from "@mui/material";
-import { useContext, useState, useEffect } from "react";
-import gameContext from "../../gameContext";
+import { useEffect } from "react";
 import { useAppSelector } from "../../hooks";
 import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
-interface IHostPageProps { }
-
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
+const selectGameCode = (state: { gameStats: any }) => state.gameStats.gameCode; // select for game stats
 
-export function HostPage(props: IHostPageProps) {
+export function HostPage() {
 
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
@@ -18,8 +16,8 @@ export function HostPage(props: IHostPageProps) {
     // we add a new player the page can grab this and change what is displayed
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
 
-    // Grab our room code we are in from the context
-    const { roomCode } = useContext(gameContext);
+    // Grab our game code from the global state
+    const gameCode = useAppSelector(selectGameCode);
 
     // Listen for the player join event from gameService and update our state if one joins
     const handlePlayerJoin = () => {
@@ -36,7 +34,7 @@ export function HostPage(props: IHostPageProps) {
         // Constantly listen
         handlePlayerJoin();
 
-    }, []);
+    });
 
     return (
         <div style={{ textAlign: "center" }}>
@@ -50,7 +48,7 @@ export function HostPage(props: IHostPageProps) {
             >
                 <Grid item xs={5}>
                     <h4>Room Code</h4>
-                    <h1>{roomCode}</h1>
+                    <h1>{gameCode}</h1>
                     <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
                     <Button variant={playerList.length > 3 ? "contained" : "outlined"} disabled={playerList.length > 3 ? false : true}> 
                         Start Game
