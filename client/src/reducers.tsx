@@ -4,12 +4,14 @@ const initialGameStats: any = {
     gameCode: '',
     gameType: '',
     numPlayers: 0,
+    roundInProgress: false,
 }
 
 const initialPlayer: string = ''
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
 const initialAnswers: any = {}
+const initialQuestion: any = ['NONE']
 
 // Reducer to respond to actions regarding the list of players 
 export function playerListReducer(state = initialPlayerList, action: any) {
@@ -31,6 +33,8 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, gameType: action.payload}
         case 'gameStats/setNumPlayers': 
             return { ...state, numPlayers: action.payload}
+        case 'gameStats/toggleRoundInProgress': 
+            return { ...state, roundInProgress: action.payload}
         default:
             return state
     }
@@ -40,6 +44,17 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
 export function playerReducer(state = initialPlayer, action: any) {
     switch (action.type) {
         case 'player/setUsername': {
+          return action.payload
+        }
+        default:
+            return state
+    }
+}
+
+// Reducer to respond to actions regarding the round question 
+export function questionReducer(state = initialQuestion, action: any) {
+    switch (action.type) {
+        case 'question/set': {
           return action.payload
         }
         default:
