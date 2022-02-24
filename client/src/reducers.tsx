@@ -9,6 +9,7 @@ const initialGameStats: any = {
 const initialPlayer: string = ''
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
+const initialAnswers: any = {}
 
 // Reducer to respond to actions regarding the list of players 
 export function playerListReducer(state = initialPlayerList, action: any) {
@@ -51,6 +52,23 @@ export function scoresReducer(state = initialScores, action: any) {
     switch (action.type) {
         case '': {
           return state
+        }
+        default:
+            return state
+    }
+}
+
+// Reducer to respond to actions regardinng the players' answers in current round 
+export function answersReducer(state = initialAnswers, action: any) {
+    switch (action.type) {
+        case 'answers/addAnswer': {
+          return {
+              ...state,
+              ...action.payload,
+          }
+        }
+        case 'answers/reset': {
+            return initialAnswers
         }
         default:
             return state

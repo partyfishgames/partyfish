@@ -28,8 +28,8 @@ class GameService {
     }
 
     // This function allows the host to listen to new answers sent in by players
-    public async onUpdateAnswers(socket: Socket, listener: (message: any) => void) {
-        socket.on("update_answer", (id, answerId) => listener({ id: id, answerId: answerId }));
+    public async onUpdateAnswers(socket: Socket, listener: (username: string, answerId: string) => void) {
+        socket.on("update_answer", (username, answerId) => listener(username, answerId));
     }
 
     // This function listens for the players individual result from the server at the end of a round

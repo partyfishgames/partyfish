@@ -44,7 +44,7 @@ export class GameController {
         const gameRoom = getSocketGameRoom(socket);
 
         socket.emit("answer_received");
-        socket.to(gameRoom).emit("update_answer", socket.id.toString(), parseInt(answer_id));
+        socket.to(gameRoom).emit("update_answer", socket.data.username, parseInt(answer_id));
     }
 
     // This function sends out the result of the round to each player (correct/incorrect)

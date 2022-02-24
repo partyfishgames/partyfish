@@ -11,6 +11,7 @@ import { useAppDispatch } from "../../hooks";
 
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
 const selectGameCode = (state: { gameStats: any }) => state.gameStats.gameCode; // select for game stats
+const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 
 export function HostPage() {
 
@@ -23,6 +24,9 @@ export function HostPage() {
     // Grab our game code from the global state
     const gameCode = useAppSelector(selectGameCode);
 
+    // Grab our player's answers from the global state
+    const playerAnswers = useAppSelector(selectAnswers);
+
     const [question, setQuestion] = useState(['None']);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [timerActive, setTimerActive] = useState(false);
@@ -34,6 +38,18 @@ export function HostPage() {
                 console.log(playerNames);
                 dispatch({ type: 'playerList/set', payload: playerNames }); // Dispatch action to change playerList
                 dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to change playerList
+            });
+    };
+
+    // Listen for the player answer event from gameService and update our state if one answers
+    const handlePlayerAnswer = () => {
+        if (socketService.socket)
+            gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
+                console.log(username);
+                console.log(answerId);
+                const answerPayload = Object();
+                answerPayload[username] = answerId;
+                dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
             });
     };
 
@@ -62,6 +78,7 @@ export function HostPage() {
 
         // Constantly listen
         handlePlayerJoin();
+        handlePlayerAnswer();
 
         let interval = 0;
         if (timerActive) {
@@ -127,6 +144,10 @@ export function HostPage() {
             <div>
                 <h3>{question[0]}</h3>
                 <LinearProgressWithLabel />
+                <h3>Answered:</h3>
+                {Object.keys(playerAnswers).map((name: any) =>
+                    <h4>{name}</h4>)
+                }
             </div>
         );
     }
