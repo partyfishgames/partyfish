@@ -3,7 +3,7 @@ name: Deploying to AWS
 on:
   push:
     branches:
-      - create-deploy-action
+      - main
 
 jobs:
   deploy:
