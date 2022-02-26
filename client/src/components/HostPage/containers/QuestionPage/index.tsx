@@ -2,17 +2,20 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../../../hooks";
+import { useAppDispatch, useAppSelector } from "../../../../hooks";
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 const selectQuestion = (state: { question: string }) => state.question; // select for game stats
+const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
 
 export function QuestionPage() {
 
     const playerAnswers = useAppSelector(selectAnswers); // Grab our player's answers from the global state
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
+    const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
+    const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
-    /* timer functionality for gameplay => begin the timer */
+    // Timer functionality for gameplay => begin the timer 
     const [timeRemaining, setTimeRemaining] = useState(30);
     const [timerActive, setTimerActive] = useState(true);
 
@@ -23,8 +26,12 @@ export function QuestionPage() {
             interval = window.setInterval(() => {
                 console.log(timeRemaining);
                 setTimeRemaining(seconds => seconds - 1);
-                if(timeRemaining <= 1) {
+                if(timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
+                    // Timer is up or all players answered 
                     setTimerActive(false);
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); // Dispatch action to change playerList
+                    console.log(playerAnswers)
+                    console.log(playerList)
                 }
             }, 1000);
         } else {

@@ -4,6 +4,7 @@ const initialGameStats: any = {
     gameCode: '',
     gameType: '',
     numPlayers: 0,
+    gameStarted: false,
     roundInProgress: false,
 }
 
@@ -35,6 +36,8 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, numPlayers: action.payload}
         case 'gameStats/toggleRoundInProgress': 
             return { ...state, roundInProgress: action.payload}
+        case 'gameStats/toggleGameStarted': 
+            return { ...state, gameStarted: action.payload}
         default:
             return state
     }

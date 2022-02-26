@@ -6,9 +6,10 @@ import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 import { QuestionPage } from "./containers/QuestionPage/index";
+import { LeaderboardPage } from "./containers/LeaderboardPage";
 
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
-const selectGameCode = (state: { gameStats: any }) => state.gameStats.gameCode; // select for game stats
+const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 const selectQuestion = (state: { question: string }) => state.question; // select for game stats
 
 export function HostPage() {
@@ -16,7 +17,7 @@ export function HostPage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
-    const gameCode = useAppSelector(selectGameCode); // Grab our game code from the global state
+    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
 
     // Listen for the player join event from roomService and update our state if one joins
@@ -45,6 +46,7 @@ export function HostPage() {
         if (joined) {
             console.log(joined);
             dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
+            dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
             dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
         }
     } 
@@ -81,9 +83,9 @@ export function HostPage() {
                 >
                     <Grid item xs={5}>
                         <h4>Room Code</h4>
-                        <h1>{gameCode}</h1>
+                        <h1>{gameStats.gameCode}</h1>
                         <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
-                        <Button onClick={startRound} variant={playerList.length > 0 ? "contained" : "outlined"} disabled={playerList.length > 0 ? false : true}>
+                        <Button onClick={startRound} variant={playerList.length > 1 ? "contained" : "outlined"} disabled={playerList.length > 1 ? false : true}>
                             Start Game
                         </Button>
                     </Grid>
@@ -100,7 +102,7 @@ export function HostPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            {question[0] === 'NONE' ? <WaitingRoom /> : <QuestionPage />}
+            { gameStats.roundInProgress ? <QuestionPage /> : (!gameStats.gameStarted) ? <WaitingRoom /> : <LeaderboardPage /> }
         </div>
     );
 }
