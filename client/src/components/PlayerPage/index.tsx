@@ -6,20 +6,28 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+
+const selectQuestion = (state: { question: string }) => state.question; // select for game stats
+const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
 export function PlayerPage() {
 
+    const dispatch = useAppDispatch(); // included in any component that dispatches actions
+
     const [isLoading, setIsLoading] = useState(false);
-    const [question, setQuestion] = useState(['None']);
-    const [hasAnswered, setHasAnswered] = useState(false);
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
+
+    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
+    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
 
     // Listen for the player join event from roomService and update our state if one joins
     const handleNewQuestion = () => {
         if (socketService.socket)
             gameService.onSendQuestion(socketService.socket, (question) => {
                 console.log(question);
-                setQuestion(question);
+                dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
+                dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
             });
     };
 
@@ -42,7 +50,8 @@ export function PlayerPage() {
 
         console.log(response);
 
-        setQuestion(['None']);
+        dispatch({ type: 'question/set', payload: ['NONE'] }); 
+        dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
         setWaitingText('Waiting for others to answer...');
         setIsLoading(false);
     }
@@ -77,7 +86,7 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            {question[0] === 'None' ? <h3>{waitingText}</h3> : <TriviaQuestion />}
+            { gameStats.roundInProgress ? <TriviaQuestion /> : <h3>{waitingText}</h3> }
         </div>
     );
 }

@@ -10,7 +10,6 @@ import { LeaderboardPage } from "./containers/LeaderboardPage";
 
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
-const selectQuestion = (state: { question: string }) => state.question; // select for game stats
 
 export function HostPage() {
 
@@ -18,7 +17,6 @@ export function HostPage() {
 
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
     const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
-    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
 
     // Listen for the player join event from roomService and update our state if one joins
     const handlePlayerJoin = () => {
