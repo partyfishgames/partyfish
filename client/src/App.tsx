@@ -10,7 +10,7 @@ const selectPlayer = (state: { player: any }) => state.player;
 
 function App() {
 
-  const username = useAppSelector(selectPlayer);
+  const player = useAppSelector(selectPlayer);
 
   const connectSocket = async () => {
     socketService.connect("http://localhost:9000").catch((err) => {
@@ -24,8 +24,8 @@ function App() {
 
   return (
     <div className="app">
-      {username === '' ? <HomePage /> : 
-      username === "Host" ? <HostPage /> : <PlayerPage />}
+      {player.username === '' ? <HomePage /> : 
+      player.username === "Host" ? <HostPage /> : <PlayerPage />}
     </div>
   );
 }

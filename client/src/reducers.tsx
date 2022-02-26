@@ -8,7 +8,11 @@ const initialGameStats: any = {
     roundInProgress: false,
 }
 
-const initialPlayer: string = ''
+const initialPlayer: any = {
+    username: '',
+    roundResult: false,
+}
+
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
 const initialAnswers: any = {}
@@ -47,7 +51,10 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
 export function playerReducer(state = initialPlayer, action: any) {
     switch (action.type) {
         case 'player/setUsername': {
-          return action.payload
+          return {...state, username: action.payload}
+        }
+        case 'player/setRoundResult': {
+            return {...state, roundResult: action.payload}
         }
         default:
             return state

@@ -8,8 +8,9 @@ import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 
-const selectQuestion = (state: { question: string }) => state.question; // select for game stats
+const selectQuestion = (state: { question: string }) => state.question; // select for question
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
+const selectPlayer = (state: {player: any}) => state.player; // select for player 
 
 export function PlayerPage() {
 
@@ -20,14 +21,26 @@ export function PlayerPage() {
 
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
+    const player = useAppSelector(selectPlayer);
 
     // Listen for the player join event from roomService and update our state if one joins
     const handleNewQuestion = () => {
         if (socketService.socket)
             gameService.onSendQuestion(socketService.socket, (question) => {
                 console.log(question);
+                dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
                 dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
                 dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+            });
+    };
+
+    // Listen for the answer result event
+    const handleRoundResult = () => {
+        if (socketService.socket)
+            gameService.onResult(socketService.socket, (result: boolean) => {
+                console.log('round result: ' + result);
+                dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
+                dispatch({ type: 'player/setRoundResult', payload: result}); 
             });
     };
 
@@ -51,13 +64,13 @@ export function PlayerPage() {
         console.log(response);
 
         dispatch({ type: 'question/set', payload: ['NONE'] }); 
-        dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
         setWaitingText('Waiting for others to answer...');
         setIsLoading(false);
     }
 
     useEffect(() => {
         handleNewQuestion();
+        handleRoundResult();
     }, []);
 
 
@@ -86,7 +99,10 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            { gameStats.roundInProgress ? <TriviaQuestion /> : <h3>{waitingText}</h3> }
+            { !gameStats.gameStarted ? <h3>{waitingText}</h3> :  
+                gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> : 
+                !gameStats.roundInProgress && question[0] === 'NONE' ? <h3>You were {player.roundResult ? 'correct.' : 'incorrect.'}</h3> : 
+                <h3>{waitingText}</h3>}
         </div>
     );
 }

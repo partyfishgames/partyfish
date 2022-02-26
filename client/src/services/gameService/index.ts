@@ -34,7 +34,7 @@ class GameService {
 
     // This function listens for the players individual result from the server at the end of a round
     public async onResult(socket: Socket, listener: (result: boolean) => void) {
-        socket.on("result", (isCorrect) => listener(isCorrect));
+        socket.on("send_result", (isCorrect) => listener(isCorrect));
     }
 
     // This function sends out the ids of correct answers at the end of the round

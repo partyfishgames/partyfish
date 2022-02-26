@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
+import socketService from '../../../../services/socketService';
+import gameService from '../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 const selectQuestion = (state: { question: string }) => state.question; // select for game stats
@@ -19,6 +21,20 @@ export function QuestionPage() {
     const [timeRemaining, setTimeRemaining] = useState(30);
     const [timerActive, setTimerActive] = useState(true);
 
+    // This function is called when the round is over to emit which players were correct/incorrect
+    const correctIDs = async () => {
+
+        console.log('sending results to players')
+
+        // Send the correct IDs to the server
+        const socket: any = socketService.socket;
+        const response = await gameService.correctIDs(socket, playerList).catch((err) => {
+            alert(err);
+        });
+
+        console.log(response);
+    }
+
     useEffect(() => {
 
         let interval = 0;
@@ -29,7 +45,8 @@ export function QuestionPage() {
                 if(timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
                     // Timer is up or all players answered 
                     setTimerActive(false);
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); // end the current round
+                    correctIDs();
                     console.log(playerAnswers)
                     console.log(playerList)
                 }
