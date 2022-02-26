@@ -57,6 +57,8 @@ export class GameController {
 
         // This is probably terrible logic but check if users are correct and send them the appropriate response
         // Loops through players in the room and if their username was correct, send them a correct response
+
+        // TODO: only returns true (that the player is always correct) even if the player is incorrect
         playersInRoom.forEach((player) => {
             if(playerNames.includes(io.sockets.sockets.get(player).data.username)) {
                 socket.to(player).emit("send_result", true);
