@@ -13,8 +13,12 @@ function App() {
   const username = useAppSelector(selectPlayer);
 
   const connectSocket = async () => {
-    socketService.connect("http://localhost:9000").catch((err) => {
-      console.log("Error: ", err);
+
+    // Grab the host address from the environment
+    const host_address = process.env.REACT_APP_PARTYFISH_SERVER as string;
+
+    socketService.connect(host_address).catch((err) => {
+      alert("Could not connect: " + err);
     });
   }
   
