@@ -22,40 +22,86 @@ export function QuestionPage() {
     const [timerActive, setTimerActive] = useState(true);
 
     // This function is called when the round is over to emit which players were correct/incorrect
-    const correctIDs = async () => {
+    const endRound = async () => {
 
-        console.log('sending results to players')
+        // End round cleanup
+        setTimerActive(false);
+        dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false }); // end the current round
+        console.log(playerAnswers);
 
-        // Send the correct IDs to the server
+        let correctAnswers = Object();
+
+        for(const player in playerAnswers) {
+            // if(playerAnswers[player] !== parseInt(question[4])) {
+            //     console.log(player + ' chose ' + playerAnswers[player] + ' but the correct answer was ' + question[4]);
+            // } else {
+            //     console.log(player + ' was right!');
+            // }
+            correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
+        }
+
+        console.log(correctAnswers);
+
+        // Send the player answer results to the server
         const socket: any = socketService.socket;
-        const response = await gameService.correctIDs(socket, playerList).catch((err) => {
+        const response = await gameService.endRound(socket, correctAnswers).catch((err) => {
             alert(err);
         });
 
-        console.log(response);
+        // set up for new round
+        setTimeRemaining(30);
+        dispatch({ type: 'answers/reset' }); // Dispatch action to change answer list
+        window.setTimeout(newRound, 3000);
     }
 
+    // This function is called when the host starts the next game round
+    const newRound = async () => {
+
+        // Get our socket and tell the server to start a new round
+        const socket: any = socketService.socket;
+        const joined = await gameService.startRound(socket, 2).catch((err) => {
+            alert(err);
+        });
+
+        // Update state variables to display the new host screen
+        if (joined) {
+            console.log(joined);
+            dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
+            dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
+            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+        }
+    } 
+
+    // Listen for the player answer event from gameService and update our state if one answers
+    const handlePlayerAnswer = () => {
+        if (socketService.socket)
+            gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
+                console.log(username + ' answered ' + answerId);
+                const answerPayload = Object();
+                answerPayload[username] = answerId;
+                dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
+            });
+    };
+
     useEffect(() => {
+
+        handlePlayerAnswer();
 
         let interval = 0;
         if (timerActive) {
             interval = window.setInterval(() => {
                 console.log(timeRemaining);
                 setTimeRemaining(seconds => seconds - 1);
-                if(timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
-                    // Timer is up or all players answered 
-                    setTimerActive(false);
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); // end the current round
-                    correctIDs();
-                    console.log(playerAnswers)
-                    console.log(playerList)
+                if (timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
+                    // Timer is up
+                    endRound();
                 }
             }, 1000);
         } else {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-        
+
     }, [timerActive, timeRemaining]);
 
     function LinearProgressWithLabel() {
@@ -75,12 +121,12 @@ export function QuestionPage() {
 
     return (
         <div>
-                <h3>{question[0]}</h3>
-                <LinearProgressWithLabel />
-                <h3>Answered:</h3>
-                {Object.keys(playerAnswers).map((name: any) =>
-                    <h4>{name}</h4>)
-                }
+            <h3>{question[0]}</h3>
+            <LinearProgressWithLabel />
+            <h3>Answered:</h3>
+            {Object.keys(playerAnswers).map((name: any) =>
+                <h4>{name}</h4>)
+            }
         </div>
     );
 }

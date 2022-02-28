@@ -34,7 +34,7 @@ export function HostPage() {
         // Prevent the page from refreshing
         e.preventDefault();
 
-        // Get our socket and tell the server to host a room by calling our roomService.hostRoom function
+        // Get our socket and tell the server to start the round by calling our roomService.startRound function
         const socket: any = socketService.socket;
         const joined = await gameService.startRound(socket, 1).catch((err) => {
             alert(err);
@@ -49,23 +49,12 @@ export function HostPage() {
         }
     } 
 
-    // Listen for the player answer event from gameService and update our state if one answers
-    const handlePlayerAnswer = () => {
-        if (socketService.socket)
-            gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
-                console.log(username);
-                console.log(answerId);
-                const answerPayload = Object();
-                answerPayload[username] = answerId;
-                dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
-            });
-    };
+    
 
     useEffect(() => {
 
-        // Constantly listen for player joining or answer
+        // Constantly listen for player joining
         handlePlayerJoin();
-        handlePlayerAnswer();
 
     });
 
