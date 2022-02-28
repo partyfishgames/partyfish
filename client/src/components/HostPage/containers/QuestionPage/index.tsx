@@ -32,11 +32,6 @@ export function QuestionPage() {
         let correctAnswers = Object();
 
         for(const player in playerAnswers) {
-            // if(playerAnswers[player] !== parseInt(question[4])) {
-            //     console.log(player + ' chose ' + playerAnswers[player] + ' but the correct answer was ' + question[4]);
-            // } else {
-            //     console.log(player + ' was right!');
-            // }
             correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
         }
 
@@ -48,29 +43,12 @@ export function QuestionPage() {
             alert(err);
         });
 
+        console.log(response); // To rid unused variable warning
+
         // set up for new round
         setTimeRemaining(30);
         dispatch({ type: 'answers/reset' }); // Dispatch action to change answer list
-        window.setTimeout(newRound, 3000);
     }
-
-    // This function is called when the host starts the next game round
-    const newRound = async () => {
-
-        // Get our socket and tell the server to start a new round
-        const socket: any = socketService.socket;
-        const joined = await gameService.startRound(socket, 2).catch((err) => {
-            alert(err);
-        });
-
-        // Update state variables to display the new host screen
-        if (joined) {
-            console.log(joined);
-            dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
-        }
-    } 
 
     // Listen for the player answer event from gameService and update our state if one answers
     const handlePlayerAnswer = () => {
@@ -93,7 +71,7 @@ export function QuestionPage() {
                 console.log(timeRemaining);
                 setTimeRemaining(seconds => seconds - 1);
                 if (timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
-                    // Timer is up
+                    // Timer is up or all players answered
                     endRound();
                 }
             }, 1000);
