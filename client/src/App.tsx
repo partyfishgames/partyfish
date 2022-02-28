@@ -17,6 +17,8 @@ function App() {
     // Grab the host address from the environment
     const host_address = process.env.REACT_APP_PARTYFISH_SERVER as string;
 
+    console.log(host_address);
+
     socketService.connect(host_address).catch((err) => {
       alert("Could not connect: " + err);
     });
