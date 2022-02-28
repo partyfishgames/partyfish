@@ -7,7 +7,7 @@ import { Server, Socket } from "socket.io";
 export class MainController {
 
     @OnConnect()
-    public onConnection(@ConnectedSocket() socket: Socket, @SocketIO() io: Server) {
+    public onConnection(@ConnectedSocket() socket: Socket, @SocketIO() _: Server) {
         console.log("New Socket connected: ", socket.id);
 
         socket.on("custom_event", (data: any) => {
