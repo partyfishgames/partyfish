@@ -75,8 +75,11 @@ export function questionReducer(state = initialQuestion, action: any) {
 // Reducer to respond to actions regardinng the players' scores 
 export function scoresReducer(state = initialScores, action: any) {
     switch (action.type) {
-        case '': {
-          return state
+        case 'scores/addScore': {
+            return {
+                ...state,
+                ...action.payload,
+            }
         }
         default:
             return state

@@ -2,10 +2,15 @@ import { Button } from "@mui/material";
 import { useAppDispatch } from "../../../../hooks";
 import gameService from "../../../../services/gameService";
 import socketService from "../../../../services/socketService";
+import { useAppSelector } from "../../../../hooks";
+
+const selectScores = (state: { scores: any }) => state.scores; // select for player scores
 
 export function LeaderboardPage() {
 
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
+
+    const playerScores = useAppSelector(selectScores); // Grab our player's scores from global state
 
     // This function is called when the host starts the next game round
     const newRound = async () => {
@@ -28,6 +33,9 @@ export function LeaderboardPage() {
     return (
         <div style={{ textAlign: "center" }}>
             <h3>Leaderboard:</h3>
+            {Object.entries(playerScores).sort((a : any, b : any) => b[1] - a[1]).map( (entry) => (
+                <h4>{entry[0]} {entry[1]}</h4>
+            ))}
             <Button onClick={newRound}>Next Round</Button>
         </div>
     );

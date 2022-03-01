@@ -7,11 +7,13 @@ import socketService from '../../../../services/socketService';
 import gameService from '../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
+const selectScores = (state: { scores: any }) => state.scores; // select for player scores
 const selectQuestion = (state: { question: string }) => state.question; // select for game stats
-const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
+const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state
 
 export function QuestionPage() {
 
+    const playerScores = useAppSelector(selectScores); // Grab players scores from the global state
     const playerAnswers = useAppSelector(selectAnswers); // Grab our player's answers from the global state
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
@@ -51,9 +53,15 @@ export function QuestionPage() {
                     score = 0;
                 }
                 correctAnswers[player] = score;
+
+                const previousScore = playerScores[player] || 0;
+                const scorePayload = Object();
+                scorePayload[player] = score + previousScore;
+                dispatch({ type: 'scores/addScore', payload:  scorePayload }); // end the current round
             }
 
             console.log(correctAnswers);
+            console.log(playerScores);
 
             // Send the player answer results to the server
             const socket: any = socketService.socket;
