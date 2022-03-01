@@ -79,7 +79,7 @@ export function QuestionPage() {
         }
         return () => clearInterval(interval);
 
-    }, [timerActive, timeRemaining, playerList.length, playerAnswers]);
+    }, [timerActive, timeRemaining, playerList.length, playerAnswers, question, dispatch]);
 
     function LinearProgressWithLabel() {
         return (
