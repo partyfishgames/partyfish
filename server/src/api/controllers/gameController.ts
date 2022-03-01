@@ -29,7 +29,6 @@ export class GameController {
             ['In Minnesota, it is illegal to tease what type of animal?', 'Squirrels', 'Beavers', 'Skunks', '3'],
             ['How long is New Zealand’s Ninety Mile Beach?', '90 miles', '55 miles', '87 miles', '2'],
             ['What fictional character is believed to be real by more than 25% of Americans?', 'James Bond', 'Sherlock Holmes', 'Harry Potter', '2']
-
         ];
         let random_index = Math.floor(Math.random() * sampleQuestions.length);
 
