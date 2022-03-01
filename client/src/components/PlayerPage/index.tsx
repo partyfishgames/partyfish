@@ -71,7 +71,7 @@ export function PlayerPage() {
     useEffect(() => {
         handleNewQuestion();
         handleRoundResult();
-    }, []);
+    }, [handleNewQuestion, handleRoundResult]);
 
 
     function TriviaQuestion() {

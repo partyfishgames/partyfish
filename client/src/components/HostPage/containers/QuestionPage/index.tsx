@@ -80,7 +80,7 @@ export function QuestionPage() {
         }
         return () => clearInterval(interval);
 
-    }, [timerActive, timeRemaining]);
+    }, [timerActive, timeRemaining, handlePlayerAnswer, endRound, playerList.length, playerAnswers]);
 
     function LinearProgressWithLabel() {
         return (
