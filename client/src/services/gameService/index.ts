@@ -39,7 +39,7 @@ class GameService {
 
     // This function sends out the ids of correct answers at the end of the round
     public async endRound(socket: Socket, playerAnswers: any): Promise<string> {
-        return new Promise((rs, rj) => {
+        return new Promise((rs, _) => {
             socket.emit("round_over", playerAnswers);
 
             rs("Round Completed");

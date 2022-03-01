@@ -16,9 +16,12 @@ export class GameController {
         // 1. Ensure enough players
         // 2. Ensure not too many players
         // 3. .. etc
+        
+        /* comment due to unreachable code warning
         if (false) {
             socket.to(socket.id).emit("start_game_error", {error: "Describe the error..."});
-        }
+        } 
+        */
 
         // Test question for now, this will be replaced by a database access call
         // TODO: Implement database question gathering
@@ -70,7 +73,7 @@ export class GameController {
         // Loops through players in the room and if their username was correct, send them a correct response
 
         // TODO: only returns true (that the player is always correct) even if the player is incorrect
-        let username;
+        let username : any;
         playersInRoom.forEach((player) => {
 
             username = io.sockets.sockets.get(player).data.username;
