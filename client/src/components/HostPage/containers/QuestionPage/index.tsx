@@ -28,7 +28,7 @@ export function QuestionPage() {
             gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
                 console.log(username + ' answered ' + answerId);
                 const answerPayload = Object();
-                answerPayload[username] = answerId;
+                answerPayload[username] = [ answerId, timeRemaining ];
                 dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
             });
         };
@@ -42,9 +42,15 @@ export function QuestionPage() {
             console.log(playerAnswers);
 
             let correctAnswers = Object();
+            let score = 0;
 
             for(const player in playerAnswers) {
-                correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
+                if (playerAnswers[player][0] === parseInt(question[4])) {
+                    score = 50 + Math.floor((playerAnswers[player][1] / 30) * 50);
+                } else {
+                    score = 0;
+                }
+                correctAnswers[player] = score;
             }
 
             console.log(correctAnswers);

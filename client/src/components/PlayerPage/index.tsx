@@ -97,11 +97,20 @@ export function PlayerPage() {
         )
     }
 
+    function RoundResult() {
+        return (
+            <div>
+                <h3>You were {player.roundResult > 0 ? 'correct.' : 'incorrect.'}</h3>
+                <h2>Awarded {player.roundResult} points!</h2>
+            </div>
+        )
+    }
+
     return (
         <div style={{ textAlign: "center" }}>
             { !gameStats.gameStarted ? <h3>{waitingText}</h3> :  
                 gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> : 
-                !gameStats.roundInProgress && question[0] === 'NONE' ? <h3>You were {player.roundResult ? 'correct.' : 'incorrect.'}</h3> : 
+                !gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> : 
                 <h3>{waitingText}</h3>}
         </div>
     );
