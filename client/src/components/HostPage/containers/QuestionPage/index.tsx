@@ -21,47 +21,46 @@ export function QuestionPage() {
     const [timeRemaining, setTimeRemaining] = useState(30);
     const [timerActive, setTimerActive] = useState(true);
 
-    // This function is called when the round is over to emit which players were correct/incorrect
-    const endRound = async () => {
-
-        // End round cleanup
-        setTimerActive(false);
-        dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false }); // end the current round
-        console.log(playerAnswers);
-
-        let correctAnswers = Object();
-
-        for(const player in playerAnswers) {
-            correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
-        }
-
-        console.log(correctAnswers);
-
-        // Send the player answer results to the server
-        const socket: any = socketService.socket;
-        const response = await gameService.endRound(socket, correctAnswers).catch((err) => {
-            alert(err);
-        });
-
-        console.log(response); // To rid unused variable warning
-
-        // set up for new round
-        setTimeRemaining(30);
-        dispatch({ type: 'answers/reset' }); // Dispatch action to change answer list
-    }
-
-    // Listen for the player answer event from gameService and update our state if one answers
-    const handlePlayerAnswer = () => {
-        if (socketService.socket)
+    useEffect(() => {
+        // Listen for the player answer event from gameService and update our state if one answers
+        const handlePlayerAnswer = () => {
+            if (socketService.socket)
             gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
                 console.log(username + ' answered ' + answerId);
                 const answerPayload = Object();
                 answerPayload[username] = answerId;
                 dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
             });
-    };
+        };
 
-    useEffect(() => {
+        // This function is called when the round is over to emit which players were correct/incorrect
+        const endRound = async () => {
+
+            // End round cleanup
+            setTimerActive(false);
+            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false }); // end the current round
+            console.log(playerAnswers);
+
+            let correctAnswers = Object();
+
+            for(const player in playerAnswers) {
+                correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
+            }
+
+            console.log(correctAnswers);
+
+            // Send the player answer results to the server
+            const socket: any = socketService.socket;
+            const response = await gameService.endRound(socket, correctAnswers).catch((err) => {
+                alert(err);
+            });
+
+            console.log(response); // To rid unused variable warning
+
+            // set up for new round
+            setTimeRemaining(30);
+            dispatch({ type: 'answers/reset' }); // Dispatch action to change answer list
+        };
 
         handlePlayerAnswer();
 
@@ -80,7 +79,7 @@ export function QuestionPage() {
         }
         return () => clearInterval(interval);
 
-    }, [timerActive, timeRemaining, handlePlayerAnswer, endRound, playerList.length, playerAnswers]);
+    }, [timerActive, timeRemaining, playerList.length, playerAnswers]);
 
     function LinearProgressWithLabel() {
         return (

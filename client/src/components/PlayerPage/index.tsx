@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Grid from '@mui/material/Grid';
@@ -22,27 +22,6 @@ export function PlayerPage() {
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
     const player = useAppSelector(selectPlayer);
-
-    // Listen for the player join event from roomService and update our state if one joins
-    const handleNewQuestion = () => {
-        if (socketService.socket)
-            gameService.onSendQuestion(socketService.socket, (question) => {
-                console.log(question);
-                dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
-                dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
-                dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
-            });
-    };
-
-    // Listen for the answer result event
-    const handleRoundResult = () => {
-        if (socketService.socket)
-            gameService.onResult(socketService.socket, (result: boolean) => {
-                console.log('round result: ' + result);
-                dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
-                dispatch({ type: 'player/setRoundResult', payload: result}); 
-            });
-    };
 
     // This function is called when the user presses the "host" button
     const sendAnswer = async (e: React.FormEvent) => {
@@ -69,9 +48,30 @@ export function PlayerPage() {
     }
 
     useEffect(() => {
+        // Listen for the player join event from roomService and update our state if one joins
+        const handleNewQuestion = () => {
+            if (socketService.socket)
+                gameService.onSendQuestion(socketService.socket, (question) => {
+                    console.log(question);
+                    dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
+                    dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+                });
+        };
+
+        // Listen for the answer result event
+        const handleRoundResult = () => {
+            if (socketService.socket)
+                gameService.onResult(socketService.socket, (result: boolean) => {
+                    console.log('round result: ' + result);
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
+                    dispatch({ type: 'player/setRoundResult', payload: result}); 
+                });
+        };
+
         handleNewQuestion();
         handleRoundResult();
-    }, [handleNewQuestion, handleRoundResult]);
+    });
 
 
     function TriviaQuestion() {
