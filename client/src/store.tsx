@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { gameStatsReducer, playerListReducer, scoresReducer, playerReducer, answersReducer, questionReducer } from './reducers'
+import { gameStatsReducer, playerListReducer, scoresReducer, playerReducer, answersReducer, questionReducer, healthReducer } from './reducers'
 
 // React-Redux Store to combine the reducers and hold the global state 
 export const store = configureStore({
@@ -10,6 +10,7 @@ export const store = configureStore({
     player: playerReducer,
     answers: answersReducer,
     question: questionReducer,
+    health: healthReducer
   },
 })
 
