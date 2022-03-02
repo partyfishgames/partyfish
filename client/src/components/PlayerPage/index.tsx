@@ -71,6 +71,11 @@ export function PlayerPage() {
 
         handleNewQuestion();
         handleRoundResult();
+
+        return () => {
+            socketService.socket?.removeAllListeners('send_result');
+            socketService.socket?.removeAllListeners('send_question');
+          }
     });
 
 

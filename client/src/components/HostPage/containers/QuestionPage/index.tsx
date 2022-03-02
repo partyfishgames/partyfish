@@ -91,7 +91,10 @@ export function QuestionPage() {
         } else {
             clearInterval(interval);
         }
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            socketService.socket?.removeAllListeners("update_answer");
+        };
 
     }, [timerActive, timeRemaining, playerList.length, playerAnswers, question, dispatch]);
 
