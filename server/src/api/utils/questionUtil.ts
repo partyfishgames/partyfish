@@ -2,8 +2,6 @@ import * as AWS from "aws-sdk";
 
 AWS.config.update({
 	region: "us-east-1",
-	accessKeyId: "AKIAUF5746EQFHPQLNNT",
-	secretAccessKey: "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"
 });
 
 export async function newQuestion() {
