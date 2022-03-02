@@ -39,23 +39,23 @@ docClient.query(params, function(err, data) {
 			questionList.push(item);
 		});
 		// console.log(questionList);
-		var random_index = Math.floor(Math.random() * questionList.length);
+		var random_index = Math.floor(Math.random() * (questionList.length-1));
 		const diff  = random_index % 3;
 		random_index = random_index - diff;
 		questionReturn.push(questionList[random_index]);
 		question[0] = questionList[random_index].questionText;
 		if(questionList[random_index].isCorrect == 'TRUE'){
-			question[4] = 1;
+			question[4] = '1';
 		}
 		question[1] = questionList[random_index].answerText;
 		questionReturn.push(questionList[random_index+1]);
 		if(questionList[random_index+1].isCorrect == 'TRUE'){
-			question[4] = 2;
+			question[4] = '2';
 		}
 		question[2] = questionList[random_index+1].answerText;
 		questionReturn.push(questionList[random_index+2]);
 		if(questionList[random_index+2].isCorrect == 'TRUE'){
-			question[4] = 2;
+			question[4] = '2';
 		}
 		question[3] = questionList[random_index+2].answerText;
 		console.log(questionReturn);
