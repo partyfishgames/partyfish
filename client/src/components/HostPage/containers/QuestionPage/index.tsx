@@ -7,11 +7,13 @@ import socketService from '../../../../services/socketService';
 import gameService from '../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
-const selectQuestion = (state: { question: string }) => state.question; // select for game stats
-const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
+const selectScores = (state: { scores: any }) => state.scores; // select for player scores
+const selectQuestion = (state: { question: any }) => state.question; // select for game stats
+const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state
 
 export function QuestionPage() {
 
+    const playerScores = useAppSelector(selectScores); // Grab players scores from the global state
     const playerAnswers = useAppSelector(selectAnswers); // Grab our player's answers from the global state
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
@@ -28,7 +30,7 @@ export function QuestionPage() {
             gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
                 console.log(username + ' answered ' + answerId);
                 const answerPayload = Object();
-                answerPayload[username] = answerId;
+                answerPayload[username] = [ answerId, timeRemaining ];
                 dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
             });
         };
@@ -42,12 +44,24 @@ export function QuestionPage() {
             console.log(playerAnswers);
 
             let correctAnswers = Object();
+            let score = 0;
 
             for(const player in playerAnswers) {
-                correctAnswers[player] = playerAnswers[player] === parseInt(question[4]);
+                if (playerAnswers[player][0] === parseInt(question[4])) {
+                    score = 50 + Math.floor((playerAnswers[player][1] / 30) * 50);
+                } else {
+                    score = 0;
+                }
+                correctAnswers[player] = score;
+
+                const previousScore = playerScores[player] || 0;
+                const scorePayload = Object();
+                scorePayload[player] = score + previousScore;
+                dispatch({ type: 'scores/addScore', payload:  scorePayload }); // end the current round
             }
 
             console.log(correctAnswers);
+            console.log(playerScores);
 
             // Send the player answer results to the server
             const socket: any = socketService.socket;
@@ -77,9 +91,12 @@ export function QuestionPage() {
         } else {
             clearInterval(interval);
         }
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            socketService.socket?.removeAllListeners("update_answer");
+        };
 
-    }, [timerActive, timeRemaining, playerList.length, playerAnswers, question, dispatch]);
+    }, [timerActive, timeRemaining, playerList.length, playerScores, playerAnswers, question, dispatch]);
 
     function LinearProgressWithLabel() {
         return (

@@ -33,8 +33,8 @@ class GameService {
     }
 
     // This function listens for the players individual result from the server at the end of a round
-    public async onResult(socket: Socket, listener: (result: boolean) => void) {
-        socket.on("send_result", (isCorrect) => listener(isCorrect));
+    public async onResult(socket: Socket, listener: (result: number, incorrectUsers: string[]) => void) {
+        socket.on("send_result", (result, incorrectUsers) => listener(result, incorrectUsers));
     }
 
     // This function sends out the ids of correct answers at the end of the round
@@ -45,6 +45,33 @@ class GameService {
             rs("Round Completed");
             // TODO: Receive confirmation or something, error checking
         })
+    }
+
+    public async sendAttack(socket: Socket, self: string, target: string) : Promise<string> {
+        return new Promise((rs, _) => {
+            socket.emit("attack_player", [self, target]);
+
+            rs("Target Acquired");
+            // TODO: Receive confirmation or something, error checking
+        })
+    }
+
+    // This function allows the host to listen for new attacks from players
+    public async onAttack(socket: Socket, listener: (origin: string, target: string) => void) {
+        socket.on("attack_received", (origin, target) => listener(origin, target));
+    }
+
+    public async endGame(socket: Socket) : Promise<string> {
+        return new Promise((rs, _) => {
+            socket.emit("game_over");
+
+            rs("Game completed!");
+            // TODO: Receive confirmation or something, error checking
+        })
+    }
+
+    public async onGameEnd(socket: Socket, listener: () => void) {
+        socket.on("game_completed", () => listener());
     }
 }
 

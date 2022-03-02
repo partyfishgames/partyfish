@@ -6,6 +6,8 @@ const initialGameStats: any = {
     numPlayers: 0,
     gameStarted: false,
     roundInProgress: false,
+    health: 0,
+    points: 0
 }
 
 const initialPlayer: any = {
@@ -16,6 +18,7 @@ const initialPlayer: any = {
 const initialPlayerList: Array<string> = []
 const initialScores: any = {}
 const initialAnswers: any = {}
+const initialHealth: any = {}
 const initialQuestion: any = ['NONE']
 
 // Reducer to respond to actions regarding the list of players 
@@ -42,6 +45,10 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, roundInProgress: action.payload}
         case 'gameStats/toggleGameStarted': 
             return { ...state, gameStarted: action.payload}
+        case 'gameStats/setHealth': 
+            return { ...state, health: action.payload}
+        case 'gameStats/setPoints': 
+            return { ...state, points: action.payload}
         default:
             return state
     }
@@ -75,13 +82,31 @@ export function questionReducer(state = initialQuestion, action: any) {
 // Reducer to respond to actions regardinng the players' scores 
 export function scoresReducer(state = initialScores, action: any) {
     switch (action.type) {
-        case '': {
-          return state
+        case 'scores/addScore': {
+            return {
+                ...state,
+                ...action.payload,
+            }
         }
         default:
             return state
     }
 }
+
+// Reducer to respond to actions regardinng the players' scores 
+export function healthReducer(state = initialHealth, action: any) {
+    switch (action.type) {
+        case 'health/addHealth': {
+            return {
+                ...state,
+                ...action.payload,
+            }
+        }
+        default:
+            return state
+    }
+}
+
 
 // Reducer to respond to actions regardinng the players' answers in current round 
 export function answersReducer(state = initialAnswers, action: any) {

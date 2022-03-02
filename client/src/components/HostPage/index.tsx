@@ -13,6 +13,8 @@ const selectGameStats = (state: { gameStats: any }) => state.gameStats; // selec
 
 export function HostPage() {
 
+    const initialHealth = 250;
+
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
     const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
@@ -29,7 +31,7 @@ export function HostPage() {
     };
 
     // This function is called when the host starts the next game round
-    const startRound = async (e: React.FormEvent) => {
+    const startGame = async (e: React.FormEvent) => {
 
         // Prevent the page from refreshing
         e.preventDefault();
@@ -43,6 +45,11 @@ export function HostPage() {
         // Update state variables to display the new host screen
         if (joined) {
             console.log(joined);
+            const playerHealthsObj = Object();
+            playerList.forEach((username : string) => {
+                playerHealthsObj[username] = initialHealth;
+            });
+            dispatch({ type: 'health/addHealth', payload: playerHealthsObj });
             dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
             dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
             dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
@@ -72,7 +79,7 @@ export function HostPage() {
                         <h4>Room Code</h4>
                         <h1>{gameStats.gameCode}</h1>
                         <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
-                        <Button onClick={startRound} variant={playerList.length > 1 ? "contained" : "outlined"} disabled={playerList.length > 1 ? false : true}>
+                        <Button onClick={startGame} variant={playerList.length > 1 ? "contained" : "outlined"} disabled={playerList.length > 1 ? false : true}>
                             Start Game
                         </Button>
                     </Grid>

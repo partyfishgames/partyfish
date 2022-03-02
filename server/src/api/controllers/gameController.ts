@@ -74,17 +74,35 @@ export class GameController {
 
         // TODO: only returns true (that the player is always correct) even if the player is incorrect
         let username : any;
+
+        let incorrectUsers = playersInRoom.map((id) => io.sockets.sockets.get(id).data.username).filter((player) => playerAnswers[player] <= 0);
+
         playersInRoom.forEach((player) => {
 
             username = io.sockets.sockets.get(player).data.username;
 
             if(Object.keys(playerAnswers).includes(username)) {
                 // Answer was received, so send if it was correct or not
-                socket.to(player).emit("send_result", playerAnswers[username]);
+                socket.to(player).emit("send_result", playerAnswers[username], incorrectUsers);
             } else {
                 // No answer was received from them
-                socket.to(player).emit("send_result", false);
+                socket.to(player).emit("send_result", 0);
             }
         });
+    }
+
+    // This function receives an attack from player and forwards it to the host
+    @OnMessage("attack_player")
+    public async attackPlayer(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: string[]) {
+        const gameRoom = getSocketGameRoom(socket);
+        console.log(message[0] + ' attacked ' + message[1]);
+        io.in(gameRoom).emit("attack_received", message[0], message[1]);
+    }
+
+    @OnMessage("game_over")
+    public async gameOver(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+        const gameRoom = getSocketGameRoom(socket);
+        console.log("Host has signaled the game is over");
+        io.in(gameRoom).emit("game_completed");
     }
 }

@@ -8,9 +8,12 @@ import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 
+import PepeSad from "../../images/pepesad.png";
+import PepeHappy from "../../images/pepehappy.png";
+
 const selectQuestion = (state: { question: string }) => state.question; // select for question
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
-const selectPlayer = (state: {player: any}) => state.player; // select for player 
+const selectPlayer = (state: { player: any }) => state.player; // select for player 
 
 export function PlayerPage() {
 
@@ -18,6 +21,9 @@ export function PlayerPage() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
+    const [usernamesAtRisk, setUsernamesAtRisk] = useState<String[]>([]);
+    const [attacked, setAttacked] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
 
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
@@ -42,8 +48,28 @@ export function PlayerPage() {
 
         console.log(response);
 
-        dispatch({ type: 'question/set', payload: ['NONE'] }); 
+        dispatch({ type: 'question/set', payload: ['NONE'] });
         setWaitingText('Waiting for others to answer...');
+        setIsLoading(false);
+    }
+
+    // This function is called when the user presses the "host" button
+    const attackPlayer = async (target: any) => {
+
+        setIsLoading(true);
+        setAttacked(true);
+
+        console.log(target);
+
+        // Send the answer to the server
+        const socket: any = socketService.socket;
+        const response = await gameService.sendAttack(socket, player.username, target).catch((err) => {
+            alert(err);
+        });
+
+        console.log(response);
+
+        setWaitingText('Waiting for others to attack');
         setIsLoading(false);
     }
 
@@ -53,24 +79,43 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onSendQuestion(socketService.socket, (question) => {
                     console.log(question);
-                    dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
+                    setAttacked(false);
+                    dispatch({ type: 'gameStats/toggleGameStarted', payload: true }); // Dispatch action to change playerList
                     dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true }); // Dispatch action to change playerList
                 });
         };
 
         // Listen for the answer result event
         const handleRoundResult = () => {
             if (socketService.socket)
-                gameService.onResult(socketService.socket, (result: boolean) => {
+                gameService.onResult(socketService.socket, (result, incorrectUsers) => {
                     console.log('round result: ' + result);
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false}); 
-                    dispatch({ type: 'player/setRoundResult', payload: result}); 
+                    setUsernamesAtRisk(incorrectUsers);
+                    dispatch({ type: 'question/set', payload: ['NONE'] });
+                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false });
+                    dispatch({ type: 'player/setRoundResult', payload: result });
+                    dispatch({ type: 'gameStats/setPoints', payload: result + gameStats.points });
                 });
         };
 
+        const handleGameEnd = () => {
+            if (socketService.socket)
+                gameService.onGameEnd(socketService.socket, () => {
+                    console.log('Game is over');
+                    setGameOver(true);
+                });
+        }
+
+        handleGameEnd();
         handleNewQuestion();
         handleRoundResult();
+
+        return () => {
+            socketService.socket?.removeAllListeners('send_result');
+            socketService.socket?.removeAllListeners('send_question');
+            socketService.socket?.removeAllListeners('game_completed');
+        }
     });
 
 
@@ -97,12 +142,67 @@ export function PlayerPage() {
         )
     }
 
+    function randomAnswer(isGood: boolean): string {
+        const goodAnswers = ['Nice one!', 'Great job!', 'Good answer!', 'You rock!', 'You are an intelligent creature'];
+        const badAnswers = ['Tough luck...', 'What were you thinking?', 'Ouch!', 'Absolutely right! And by right I mean wrong'];
+
+        if (isGood) {
+            return goodAnswers[Math.floor(Math.random() * (goodAnswers.length))];
+        }
+        return badAnswers[Math.floor(Math.random() * (badAnswers.length))];
+
+    }
+
+    function RoundResult() {
+        return (
+            <div>
+                {player.roundResult > 0 ?
+                    <div>
+                        <h3>{randomAnswer(true)}</h3>
+                        <h2>Awarded {player.roundResult} points!</h2>
+                        <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
+                        <h3>You have {gameStats.points} pts</h3>
+                        <ButtonGroup
+                            orientation="vertical"
+                            aria-label="vertical outlined button group"
+                        >
+                            {usernamesAtRisk.length > 0 ? !attacked ?
+                                usernamesAtRisk.map((username, idx) => (
+                                    <Button onClick={() => attackPlayer(username)} key={idx}>{username}</Button>
+                                )) : <h4>Waiting for other attacks...</h4>
+                                :
+                                <h4>Everyone is safe!</h4>
+                            }
+
+                        </ButtonGroup>
+                    </div>
+                    :
+                    <div>
+                        <h3>{randomAnswer(false)}</h3>
+                        <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
+                        <h3>You have {gameStats.points} pts</h3>
+                        <h4>Opponents are choosing your fate...</h4>
+                    </div>
+                }
+            </div>
+        )
+    }
+
+    function GameOver() {
+        return (
+            <div>
+                <h1>Thanks for playing!</h1>
+                <img src={PepeHappy} style={{ height: "100px", width: "auto" }} alt="pepefinish"></img>
+            </div>
+        )
+    }
+
     return (
         <div style={{ textAlign: "center" }}>
-            { !gameStats.gameStarted ? <h3>{waitingText}</h3> :  
-                gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> : 
-                !gameStats.roundInProgress && question[0] === 'NONE' ? <h3>You were {player.roundResult ? 'correct.' : 'incorrect.'}</h3> : 
-                <h3>{waitingText}</h3>}
+            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> :
+                (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
+                    (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
+                        <h3>{waitingText}</h3>)))}
         </div>
     );
 }
