@@ -1,8 +1,11 @@
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Paper, Box } from "@mui/material";
 import React, { useState } from "react";
 import roomService from "../../services/roomService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
+import Bubbles from './images/bubbles.png';
+
+
 
 export function HomePage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
@@ -54,7 +57,7 @@ export function HomePage() {
 
         // Get our socket and tell the server to join a room with the current id and our username
         const socket: any = socketService.socket;
-        const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
+                const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
             alert(err);
         });
 
@@ -67,43 +70,82 @@ export function HomePage() {
     }
 
     return (
-        <div style={{ textAlign: "center" }}>
-            <h1 style={{ color: "#2196f3" }}>Welcome to PartyFish</h1>
+        <div style={{ textAlign: "center" }} >   
+            <Box sx={{border: '1px dashed #d6a304',mx: 2, my: 2,}}>
+                <Paper 
+                    sx={{
+                    mx:2,
+                    my:2,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundImage: `url(${Bubbles})`
+                }}>
+                    <h1 style={{ color: "#2196f3"}}>
+                            Welcome to PartyFish
+                    </h1>
+                </Paper>
+            </Box>
+            <Box sx={{border: '1px dashed #d6a304',mx:12,
+                    my:2,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundImage: `url(${Bubbles})`}}>
+                <Paper elevation={3} sx={{my:2, mx:12}}>
+                    <h3 style={{color: "white", background: '#d6a304'}}
+                        > What would you like to do?
+                    </h3>
+                </Paper>
+                <Grid container
+                    spacing={2}
+                    style={{ height: '300px' }}
+                    justifyContent="center"
+                    alignItems="center"
 
-            <Grid container
-                spacing={2}
-                style={{ height: '300px' }}
-                justifyContent="center"
-                alignItems="center"
-            >
-                <Grid item xs={3}>
-                    <Grid container
-                        direction="row"
-                        justifyContent="center"
-                        alignItems="center">
-                        <Grid item>
-                            <form onSubmit={hostRoom}>
-                                <Button variant="contained" type="submit">Host Room</Button>
-                            </form >
+                >
+                    <Grid item  >
+                        <Grid container
+                            spacing={2}
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="center"
+                            >
+                            <Paper elevation={3} sx={{px:1, py:1, mx:1, my:1}} style={{background: '#d6a304', height: '250px', width: '250px'}}>
+                                <Grid item >
+                                    <form onSubmit={hostRoom}>
+                                        <Button variant="contained" type="submit" style={{ color: "#2196f3"}}
+                                            sx={{mx: 6, my: 12, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundImage: `url(${Bubbles})`}}>
+                                            Host Room
+                                            </Button>
+                                    </form >
+                                </Grid>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                    <Grid item>
+                        <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
+                            <Paper elevation={3} sx={{px:1, py:1, mx:1, my:1}} style={{background: '#d6a304',  height: '250px', width: '250px'}}>
+                                <Grid item sx={{px:1, py:1, mt:4}}>
+                                    <TextField spellCheck='false' value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" style={{background: "#2196f3"}} 
+                                    />              
+                                </Grid>
+                                <Grid item sx={{px:1, py:1}}>
+                                    <TextField spellCheck='false' value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" style={{background: "#2196f3"}} />
+                                </Grid>
+                                <Grid item sx={{px:1, py:1}}>
+                                    <form onSubmit={joinRoom}>
+                                        <Button variant="contained" type="submit" style={{ color: "#2196f3"}}
+                                            sx={{mb:4, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundImage: `url(${Bubbles})`}}>
+                                            Join Room
+                                        </Button>
+                                    </form>
+                                </Grid>
+                            </Paper>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={3}>
-                    <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
-                        <Grid item>
-                            <TextField spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
-                        </Grid>
-                        <Grid item>
-                            <TextField spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
-                        </Grid>
-                        <Grid item>
-                            <form onSubmit={joinRoom}>
-                                <Button variant="contained" type="submit">Join Room</Button>
-                            </form>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
+            </Box>
         </div>
     );
 }
