@@ -23,6 +23,7 @@ export function PlayerPage() {
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
     const [usernamesAtRisk, setUsernamesAtRisk] = useState<String[]>([]);
     const [attacked, setAttacked] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
 
     const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
     const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
@@ -91,18 +92,29 @@ export function PlayerPage() {
                 gameService.onResult(socketService.socket, (result, incorrectUsers) => {
                     console.log('round result: ' + result);
                     setUsernamesAtRisk(incorrectUsers);
+                    dispatch({ type: 'question/set', payload: ['NONE'] });
                     dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false });
                     dispatch({ type: 'player/setRoundResult', payload: result });
                     dispatch({ type: 'gameStats/setPoints', payload: result + gameStats.points });
                 });
         };
 
+        const handleGameEnd = () => {
+            if (socketService.socket)
+                gameService.onGameEnd(socketService.socket, () => {
+                    console.log('Game is over');
+                    setGameOver(true);
+                });
+        }
+
+        handleGameEnd();
         handleNewQuestion();
         handleRoundResult();
 
         return () => {
             socketService.socket?.removeAllListeners('send_result');
             socketService.socket?.removeAllListeners('send_question');
+            socketService.socket?.removeAllListeners('game_completed');
         }
     });
 
@@ -148,7 +160,7 @@ export function PlayerPage() {
                     <div>
                         <h3>{randomAnswer(true)}</h3>
                         <h2>Awarded {player.roundResult} points!</h2>
-                        <img style={{height: "80px", width: "auto"}} src={PepeHappy} alt="Happy Pepe"></img>
+                        <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
                         <h3>You have {gameStats.points} pts</h3>
                         <ButtonGroup
                             orientation="vertical"
@@ -167,7 +179,7 @@ export function PlayerPage() {
                     :
                     <div>
                         <h3>{randomAnswer(false)}</h3>
-                        <img style={{height: "80px", width: "auto"}} src={PepeSad} alt="Sad Pepe"></img>
+                        <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
                         <h3>You have {gameStats.points} pts</h3>
                         <h4>Opponents are choosing your fate...</h4>
                     </div>
@@ -176,12 +188,21 @@ export function PlayerPage() {
         )
     }
 
+    function GameOver() {
+        return (
+            <div>
+                <h1>Thanks for playing!</h1>
+                <img src={PepeHappy} style={{ height: "100px", width: "auto" }} alt="pepefinish"></img>
+            </div>
+        )
+    }
+
     return (
         <div style={{ textAlign: "center" }}>
-            {!gameStats.gameStarted ? <h3>{waitingText}</h3> :
-                gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
-                    !gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
-                        <h3>{waitingText}</h3>}
+            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> :
+                (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
+                    (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
+                        <h3>{waitingText}</h3>)))}
         </div>
     );
 }

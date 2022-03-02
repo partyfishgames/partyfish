@@ -8,7 +8,7 @@ import gameService from '../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores
-const selectQuestion = (state: { question: string }) => state.question; // select for game stats
+const selectQuestion = (state: { question: any }) => state.question; // select for game stats
 const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state
 
 export function QuestionPage() {
@@ -96,7 +96,7 @@ export function QuestionPage() {
             socketService.socket?.removeAllListeners("update_answer");
         };
 
-    }, [timerActive, timeRemaining, playerList.length, playerAnswers, question, dispatch]);
+    }, [timerActive, timeRemaining, playerList.length, playerScores, playerAnswers, question, dispatch]);
 
     function LinearProgressWithLabel() {
         return (

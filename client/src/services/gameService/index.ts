@@ -60,6 +60,19 @@ class GameService {
     public async onAttack(socket: Socket, listener: (origin: string, target: string) => void) {
         socket.on("attack_received", (origin, target) => listener(origin, target));
     }
+
+    public async endGame(socket: Socket) : Promise<string> {
+        return new Promise((rs, _) => {
+            socket.emit("game_over");
+
+            rs("Game completed!");
+            // TODO: Receive confirmation or something, error checking
+        })
+    }
+
+    public async onGameEnd(socket: Socket, listener: () => void) {
+        socket.on("game_completed", () => listener());
+    }
 }
 
 export default new GameService();

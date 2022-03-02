@@ -54,7 +54,7 @@ export function HomePage() {
 
         // Get our socket and tell the server to join a room with the current id and our username
         const socket: any = socketService.socket;
-        const joined = await roomService.joinRoom(socket, playerRoomCode, pUsername).catch((err) => {
+        const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
             alert(err);
         });
 
@@ -91,10 +91,10 @@ export function HomePage() {
                 <Grid item xs={3}>
                     <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
                         <Grid item>
-                            <TextField value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
+                            <TextField spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
                         </Grid>
                         <Grid item>
-                            <TextField value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
+                            <TextField spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
                         </Grid>
                         <Grid item>
                             <form onSubmit={joinRoom}>

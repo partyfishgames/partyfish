@@ -8,7 +8,7 @@ export class RoomController {
 
     // Basic logic to set up a new room to host when the client presses the "Host" button on the homepage
     @OnMessage("host_room")
-    public async hostRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket<ClientToServerEvents,ServerToClientEvents,InterServerEvents,SocketData>) {
+    public async hostRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>) {
 
         console.log("Host room request from: ", socket.id);
 
@@ -22,8 +22,8 @@ export class RoomController {
 
     // Basic logic to join a new game that is being hosted when the user presses the "Join" button on the homepage
     @OnMessage("join_game")
-    public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket<ClientToServerEvents,ServerToClientEvents,InterServerEvents,SocketData>, @MessageBody() message: any) {
-        
+    public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>, @MessageBody() message: any) {
+
         console.log("New user {", message.username, "} joining room: ", message.roomId);
         const activeRooms = getActiveRooms(io);
 
@@ -33,17 +33,29 @@ export class RoomController {
                 error: "Room does not exist, please try another code."
             });
         } else {
-            // If room does exist, join the room
-            await socket.join(message.roomId);
 
-            // Set username and roomId to socket (player) and emit that it worked
-            socket.data.username = message.username;
-            socket.data.roomId = message.roomId;
-            socket.emit("room_join_success");
+            const roomId = message.roomId;
 
-            // Get new list of players in the room (including new one) and send to host
-            const playerNames = getSocketsInRoom(io, message.roomId);
-            socket.to(message.roomId).emit("on_player_join", playerNames)
+            // Get socket usernames connected to the room
+            const playersInRoom = getSocketsInRoom(io, roomId);
+
+            if (playersInRoom.includes(message.username)) {
+                socket.emit("room_join_error", {
+                    error: "Username already taken!"
+                });
+            } else {
+                // If room does exist, join the room
+                await socket.join(message.roomId);
+
+                // Set username and roomId to socket (player) and emit that it worked
+                socket.data.username = message.username;
+                socket.data.roomId = message.roomId;
+                socket.emit("room_join_success");
+
+                // Get new list of players in the room (including new one) and send to host
+                const playerNames = getSocketsInRoom(io, message.roomId);
+                socket.to(message.roomId).emit("on_player_join", playerNames)
+            }
         }
     }
 

@@ -98,4 +98,11 @@ export class GameController {
         console.log(message[0] + ' attacked ' + message[1]);
         io.in(gameRoom).emit("attack_received", message[0], message[1]);
     }
+
+    @OnMessage("game_over")
+    public async gameOver(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+        const gameRoom = getSocketGameRoom(socket);
+        console.log("Host has signaled the game is over");
+        io.in(gameRoom).emit("game_completed");
+    }
 }
