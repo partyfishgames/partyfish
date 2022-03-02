@@ -7,8 +7,8 @@ AWS.config.update({
 export async function newQuestion() {
     const docClient = new AWS.DynamoDB.DocumentClient();
     const table = "PartyFishTrivalry";
-    let random_category = Math.floor(Math.random() * 8);
-    const catList = ['Movies', 'Tech', 'Entertainment', 'Educational', 'Science', 'Sports', 'Geography', 'Music'];
+    let random_category = Math.floor(Math.random() * 15);
+    const catList = ['Movies', 'Tech', 'Entertainment', 'Educational', 'Science', 'Sports', 'Geography', 'Art & Design', 'TV', 'History', 'Nature', 'Business', 'Food & Drink', 'Games', 'Literature', 'Music'];
 
     // Category types are Movies, Tech, Entertainment, Educational, Science, Sports, Geography, Music
     let category = catList[random_category];
