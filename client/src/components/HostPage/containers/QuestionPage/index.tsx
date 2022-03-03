@@ -100,7 +100,7 @@ export function QuestionPage() {
             socketService.socket?.removeAllListeners("update_answer");
         };
 
-    }, [timerActive, timeRemaining, playerLists.alivePlayers.length, playerScores, playerAnswers, question, dispatch]);
+    }, [timerActive, timeRemaining, playerLists.alivePlayers, playerScores, playerAnswers, question, dispatch]);
 
     function LinearProgressWithLabel() {
         return (
