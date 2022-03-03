@@ -33,8 +33,8 @@ class GameService {
     }
 
     // This function listens for the players individual result from the server at the end of a round
-    public async onResult(socket: Socket, listener: (result: number, incorrectUsers: string[]) => void) {
-        socket.on("send_result", (result, incorrectUsers) => listener(result, incorrectUsers));
+    public async onResult(socket: Socket, listener: (result: number, aliveUsers: string[]) => void) {
+        socket.on("send_result", (result, aliveUsers) => listener(result, aliveUsers));
     }
 
     // This function listens for the players' attacks received by others from the server at the end of a round
@@ -43,9 +43,9 @@ class GameService {
     }
 
     // This function sends out the ids of correct answers at the end of the round
-    public async endRound(socket: Socket, playerAnswers: any): Promise<string> {
+    public async endRound(socket: Socket, playerAnswers: any, alivePlayers: any): Promise<string> {
         return new Promise((rs, _) => {
-            socket.emit("round_over", playerAnswers);
+            socket.emit("round_over", playerAnswers, alivePlayers);
 
             rs("Round Completed");
             // TODO: Receive confirmation or something, error checking

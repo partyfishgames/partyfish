@@ -68,7 +68,7 @@ export function QuestionPage() {
 
             // Send the player answer results to the server
             const socket: any = socketService.socket;
-            const response = await gameService.endRound(socket, correctAnswers).catch((err) => {
+            const response = await gameService.endRound(socket, correctAnswers, playerLists.alivePlayers).catch((err) => {
                 alert(err);
             });
 
