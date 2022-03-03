@@ -29,7 +29,6 @@ export async function newQuestion() {
         // console.log(data);
 
         data.Items.forEach(function (item) {
-            console.log(item);
             questionList.push(item);
         });
         var random_index = Math.floor(Math.random() * (questionList.length - 1));
