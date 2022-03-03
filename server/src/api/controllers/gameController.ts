@@ -2,6 +2,7 @@ import { ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO } f
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "models";
 import { Server, Socket } from "socket.io";
 import { getSocketGameRoom } from "../utils/roomUtils";
+
 import { newQuestion } from "../utils/questionUtil";
 
 @SocketController()
@@ -23,8 +24,11 @@ export class GameController {
             socket.to(socket.id).emit("start_game_error", {error: "Describe the error..."});
         } 
         */
-       
+
+        // Test question for now, this will be replaced by a database access call
+        // TODO: Implement database question gathering
         // Current format is [question, ans1, ans2, ans3, correct_answer_index]
+
         const backupQuestions = [
             ['What nationality is Cristiano Ronaldo?', 'Portugese', 'French', 'Spanish', '1'],
             ['In Minnesota, it is illegal to tease what type of animal?', 'Squirrels', 'Beavers', 'Skunks', '3'],

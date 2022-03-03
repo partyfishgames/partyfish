@@ -9,7 +9,6 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.53.0",
     "@types/models": "file:../models",
-    "aws-sdk": "^2.1085.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.0.0",
