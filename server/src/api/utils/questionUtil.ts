@@ -3,11 +3,11 @@ const client = new DynamoDBClient({ region: "us-east-1" });
 
 export async function newQuestion() {
     const table = "PartyFishTrivalry";
-    let random_category = Math.floor(Math.random() * 15);
-    const catList = ['Movies', 'Tech', 'Entertainment', 'Educational', 'Science', 'Sports', 'Geography', 'Art & Design', 'TV', 'History', 'Nature', 'Business', 'Food & Drink', 'Games', 'Literature', 'Music'];
+    const categoryList = ['Movies', 'Tech', 'Entertainment', 'Educational', 'Science ', 'Sports', 'Geography', 'Art & Design', 'TV', 'History', 'Nature', 'Business', 'Food & Drink', 'Games', 'Literature ', 'Music'];
 
+
+    let category = categoryList[Math.floor(Math.random() * categoryList.length)];
     // Category types are Movies, Tech, Entertainment, Educational, Science, Sports, Geography, Music
-    let category = catList[random_category];
     const params : QueryCommandInput = {
         TableName: table,
         KeyConditionExpression: "#q = :qqq",

@@ -14,14 +14,12 @@ export function HomePage() {
     // This function is called when the user types something in the room code textfield
     // and updates the state
     const handleRoomCodeChange = (e: React.ChangeEvent<any>) => {
-        console.log(e.target.value);
         setPlayerRoomCode(e.target.value);
     }
 
     // This function is called when the user types something in the username textfield
     // and updates the state with the new value
     const handleUsernameChange = (e: React.ChangeEvent<any>) => {
-        console.log(e.target.value);
         setPUsername(e.target.value);
     }
 
@@ -51,7 +49,7 @@ export function HomePage() {
 
         // Prevent the page from refreshing
         e.preventDefault();
-
+      
         if (pUsername.length === 0) {
             alert("Please enter a username!");
         } else {
@@ -75,12 +73,12 @@ export function HomePage() {
             <h1 style={{ color: "#2196f3" }}>Welcome to PartyFish</h1>
 
             <Grid container
-                spacing={2}
+                spacing={1}
                 style={{ height: '300px' }}
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                     <Grid container
                         direction="row"
                         justifyContent="center"
@@ -92,13 +90,13 @@ export function HomePage() {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                     <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
                         <Grid item>
-                            <TextField spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
+                            <TextField autoComplete="false" spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
                         </Grid>
                         <Grid item>
-                            <TextField spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
+                            <TextField autoComplete="false" spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
                         </Grid>
                         <Grid item>
                             <form onSubmit={joinRoom}>
