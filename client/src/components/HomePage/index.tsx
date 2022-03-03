@@ -50,7 +50,7 @@ export function HomePage() {
         // Prevent the page from refreshing
         e.preventDefault();
       
-        if (pUsername.length === 0) {
+        if (pUsername.trim().length === 0) {
             alert("Please enter a username!");
         } else {
             // Get our socket and tell the server to join a room with the current id and our username
