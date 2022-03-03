@@ -14,14 +14,12 @@ export function HomePage() {
     // This function is called when the user types something in the room code textfield
     // and updates the state
     const handleRoomCodeChange = (e: React.ChangeEvent<any>) => {
-        console.log(e.target.value);
         setPlayerRoomCode(e.target.value);
     }
 
     // This function is called when the user types something in the username textfield
     // and updates the state with the new value
     const handleUsernameChange = (e: React.ChangeEvent<any>) => {
-        console.log(e.target.value);
         setPUsername(e.target.value);
     }
 
@@ -54,7 +52,7 @@ export function HomePage() {
 
         // Get our socket and tell the server to join a room with the current id and our username
         const socket: any = socketService.socket;
-        const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
+        const joined = await roomService.joinRoom(socket, playerRoomCode.trim().toLowerCase(), pUsername.trim()).catch((err) => {
             alert(err);
         });
 
@@ -91,10 +89,10 @@ export function HomePage() {
                 <Grid item xs={3}>
                     <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
                         <Grid item>
-                            <TextField spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
+                            <TextField autoComplete="false" spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
                         </Grid>
                         <Grid item>
-                            <TextField spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
+                            <TextField autoComplete="false" spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
                         </Grid>
                         <Grid item>
                             <form onSubmit={joinRoom}>
