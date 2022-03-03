@@ -63,7 +63,7 @@ export function HomePage() {
 
                 // Update global redux state's room code and user's name
                 dispatch({ type: 'gameStats/setGameCode', payload: joined });
-                dispatch({ type: 'player/setUsername', payload: pUsername });
+                dispatch({ type: 'player/setUsername', payload: pUsername.trim() });
             }
         }
     }
