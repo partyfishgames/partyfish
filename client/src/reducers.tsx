@@ -6,7 +6,7 @@ const initialGameStats: any = {
     numPlayers: 0,
     gameStarted: false,
     roundInProgress: false,
-    health: 0,
+    health: 250,
     points: 0
 }
 
@@ -49,6 +49,8 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, health: action.payload}
         case 'gameStats/setPoints': 
             return { ...state, points: action.payload}
+        case 'gameStats/attackPlayer': 
+            return { ...state, health: action.payload}
         default:
             return state
     }

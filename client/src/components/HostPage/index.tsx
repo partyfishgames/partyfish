@@ -78,8 +78,8 @@ export function HostPage() {
                     <Grid item xs={5}>
                         <h4>Room Code</h4>
                         <h1>{gameStats.gameCode}</h1>
-                        <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.io and enter code to join!</h4>
-                        <Button onClick={startGame} variant={playerList.length > 1 ? "contained" : "outlined"} disabled={playerList.length > 1 ? false : true}>
+                        <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.app and enter code to join!</h4>
+                        <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
                             Start Game
                         </Button>
                     </Grid>

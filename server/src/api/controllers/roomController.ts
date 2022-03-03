@@ -44,17 +44,24 @@ export class RoomController {
                     error: "Username already taken!"
                 });
             } else {
-                // If room does exist, join the room
-                await socket.join(message.roomId);
 
-                // Set username and roomId to socket (player) and emit that it worked
-                socket.data.username = message.username;
-                socket.data.roomId = message.roomId;
-                socket.emit("room_join_success");
+                if (playersInRoom.length >= 8) {
+                    socket.emit("room_join_error", {
+                        error: "The player limit has already been reached!"
+                    });
+                } else {
+                    // If room does exist, join the room
+                    await socket.join(message.roomId);
 
-                // Get new list of players in the room (including new one) and send to host
-                const playerNames = getSocketsInRoom(io, message.roomId);
-                socket.to(message.roomId).emit("on_player_join", playerNames)
+                    // Set username and roomId to socket (player) and emit that it worked
+                    socket.data.username = message.username;
+                    socket.data.roomId = message.roomId;
+                    socket.emit("room_join_success");
+
+                    // Get new list of players in the room (including new one) and send to host
+                    const playerNames = getSocketsInRoom(io, message.roomId);
+                    socket.to(message.roomId).emit("on_player_join", playerNames)
+                }
             }
         }
     }

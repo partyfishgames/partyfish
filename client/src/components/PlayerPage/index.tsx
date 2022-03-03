@@ -99,6 +99,15 @@ export function PlayerPage() {
                 });
         };
 
+        // Listen for an attack from another player event
+        const handleAttack = () => {
+            if (socketService.socket)
+                gameService.onAttacked(socketService.socket, (attacker) => {
+                    console.log(attacker + 'attacked you');
+                    dispatch({ type: 'gameStats/attackPlayer', payload: gameStats.health - 50});
+                });
+        };
+
         const handleGameEnd = () => {
             if (socketService.socket)
                 gameService.onGameEnd(socketService.socket, () => {
@@ -110,6 +119,7 @@ export function PlayerPage() {
         handleGameEnd();
         handleNewQuestion();
         handleRoundResult();
+        handleAttack();
 
         return () => {
             socketService.socket?.removeAllListeners('send_result');
@@ -162,6 +172,7 @@ export function PlayerPage() {
                         <h2>Awarded {player.roundResult} points!</h2>
                         <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
                         <h3>You have {gameStats.points} pts</h3>
+                        <h4>Choose a player to attack:</h4>
                         <ButtonGroup
                             orientation="vertical"
                             aria-label="vertical outlined button group"
@@ -199,10 +210,11 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> :
+            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> : 
+                (gameStats.health === 0 ? <h3>You're dead, lol.</h3> :
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
-                        <h3>{waitingText}</h3>)))}
+                        <h3>{waitingText}</h3>))))}
         </div>
     );
 }
