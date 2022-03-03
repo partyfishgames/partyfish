@@ -69,12 +69,12 @@ export function HomePage() {
             <h1 style={{ color: "#2196f3" }}>Welcome to PartyFish</h1>
 
             <Grid container
-                spacing={2}
+                spacing={1}
                 style={{ height: '300px' }}
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                     <Grid container
                         direction="row"
                         justifyContent="center"
@@ -86,7 +86,7 @@ export function HomePage() {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={5}>
                     <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
                         <Grid item>
                             <TextField autoComplete="false" spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
