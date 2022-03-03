@@ -52,7 +52,7 @@ export function HomePage() {
 
         // Trimming room code and username to prevent spacing issues
         const trimmedUsername = pUsername.trim();
-        const trimmedRoom = playerRoomCode.trim();
+        const trimmedRoom = playerRoomCode.trim().toLowerCase();
       
         if (trimmedUsername.length === 0) {
             alert("Please enter a username!");
