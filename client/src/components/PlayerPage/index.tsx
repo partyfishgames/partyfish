@@ -23,7 +23,6 @@ export function PlayerPage() {
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
     const [usernamesAtRisk, setUsernamesAtRisk] = useState<String[]>([]);
     const [attacked, setAttacked] = useState(false);
-    //const [gameOver, setGameOver] = useState(false);
 
     // subscribe variables to changes in the global state from dispatched actions
     const question = useAppSelector(selectQuestion); 
@@ -93,11 +92,19 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onResult(socketService.socket, (result, aliveUsers) => {
                     console.log('round result: ' + result);
+                    console.log('users who can get reduced health:' + aliveUsers)
+
+                    // remove player's own name from list of possible attackers 
+                    aliveUsers.forEach((user,index)=>{
+                        if (user === player.username) aliveUsers.splice(index,1);
+                     });
+                    
                     setUsernamesAtRisk(aliveUsers);
+
                     dispatch({ type: 'question/set', payload: ['NONE'] });
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false });
+                    dispatch({ type: 'gameStats/setRoundInProgress', payload: false });
                     dispatch({ type: 'player/setRoundResult', payload: result });
-                    dispatch({ type: 'player/increaseScore', payload: result });
+                    dispatch({ type: 'player/setScore', payload: player.score + result });
                 });
         };
 
@@ -106,7 +113,7 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onAttacked(socketService.socket, (attacker) => {
                     console.log(attacker + 'attacked you');
-                    dispatch({ type: 'player/attackPlayer'});
+                    dispatch({ type: 'player/attackPlayer', payload: player.score - 50});
                 });
         };
 
@@ -114,7 +121,6 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onGameEnd(socketService.socket, () => {
                     console.log('Game is over');
-                    //setGameOver(true);
                     dispatch({ type: 'gameStats/setGameOver', payload: true }); // End the game
                 });
         }
@@ -213,7 +219,7 @@ export function PlayerPage() {
     return (
         <div style={{ textAlign: "center" }}>
             {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameStats.gameOver ? <GameOver /> : 
-                (player.score === 0 ? <h3>You're dead, lol.</h3> :
+                (player.score <= 0 ? <h3>You're dead, lol.</h3> :
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
                         <h3>{waitingText}</h3>))))}

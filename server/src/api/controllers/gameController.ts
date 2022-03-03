@@ -66,13 +66,14 @@ export class GameController {
 
     // This function sends out the result of the round to each player (correct/incorrect)
     @OnMessage("round_over")
-    public async roundOver(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() playerAnswers: any, alivePlayers: any) {
+    public async roundOver(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() playerInfo: any) {
         const roomId = getSocketGameRoom(socket);
 
         // Get socket ids connected to the room
         const playersInRoom = Array.from(io.sockets.adapter.rooms.get(roomId));
 
-        console.log(playerAnswers);
+        console.log('player info:')
+        console.log(playerInfo);
 
         // This is probably terrible logic but check if users are correct and send them the appropriate response
         // Loops through players in the room and if their username was correct, send them a correct response
@@ -91,13 +92,20 @@ export class GameController {
             }
         }  */
 
+        //let aliveUsers = playersInRoom.map((id) => io.sockets.sockets.get(id).data.username).filter((player) => alivePlayers.includes(player));
+
+        let aliveUsers = playerInfo.playersAlive;
+
+        console.log('alive users:')
+        console.log(aliveUsers)
+
         playersInRoom.forEach((player) => {
 
             username = io.sockets.sockets.get(player).data.username;
 
-            if(Object.keys(playerAnswers).includes(username)) {
+            if(Object.keys(playerInfo.answers).includes(username)) {
                 // Answer was received, so send if it was correct or not
-                socket.to(player).emit("send_result", playerAnswers[username], alivePlayers);
+                socket.to(player).emit("send_result", playerInfo.answers[username], aliveUsers);
             } else {
                 // No answer was received from them
                 socket.to(player).emit("send_result", 0);

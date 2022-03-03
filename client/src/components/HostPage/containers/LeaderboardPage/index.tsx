@@ -20,7 +20,6 @@ export function LeaderboardPage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
     const [attacks, setAttacks] = useState<string[][]>([]); // hold the round's current attacks for display
-    //const [gameOver, setGameOver] = useState(false);
 
     // subscribe variables to changes in the global state from dispatched actions
     const playerLists = useAppSelector(selectPlayersList);
@@ -43,9 +42,8 @@ export function LeaderboardPage() {
         if (joined) {
             console.log(joined);
             dispatch({ type: 'question/set', payload: joined }); // Set the round's question
-            //dispatch({ type: 'gameStats/setGameStarted', payload: true }); // Dispatch action to change playerList
             dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Start the round
-            dispatch({ type: 'gameStats/incrementRoundNumber'}); // Increment round number
+            dispatch({ type: 'gameStats/setRoundNumber', payload: gameStats.roundNumber + 1}); // Increment round number
         }
     }
 
@@ -61,7 +59,6 @@ export function LeaderboardPage() {
         // Update state variables to display the end of the game
         if (result) {
             console.log(result);
-            //setGameOver(true);
             dispatch({ type: 'gameStats/setGameOver', payload: true }); // End the game
         }
     }
@@ -88,10 +85,6 @@ export function LeaderboardPage() {
         }
     }
 
-    /* const remainingPlayers = () => {
-        return Object.entries(playerScores).filter((a: any) => a[1] > 0);
-    } */
-
     useEffect(() => {
 
         handleAttack(); // Constantly listen for player attacks on leaderboard
@@ -108,15 +101,9 @@ export function LeaderboardPage() {
             <h3>Correct Answer: {question[parseInt(question[4])]}</h3>
             <Grid container direction="row" justifyContent="center" alignItems="flex-start">
                 <Grid item md={3}>
-                    <h2>Score <VscGraph /></h2>
+                    <h2>Score<VscGraph /> / Health<RiHeartFill /></h2>
                     {Object.entries(playerScores).sort((a: any, b: any) => b[1] - a[1]).map((entry, idx) => (
                         <h4>{idx + 1}. {entry[0]} {entry[1]}</h4>
-                    ))}
-                </Grid>
-                <Grid item md={3}>
-                    <h2>Health <RiHeartFill /></h2>
-                    {Object.entries(playerScores).sort((a: any, b: any) => b[1] - a[1]).map((entry) => (
-                        <h4>{entry[0]} {entry[1]}</h4>
                     ))}
                 </Grid>
                 <Grid item md={3}>
@@ -125,7 +112,7 @@ export function LeaderboardPage() {
                 </Grid>
             </Grid>
 
-            {playerLists.alivePlayers.length > 1 && gameStats.roundNumber <= 10 ?
+            {playerLists.alivePlayers.length > 1 && gameStats.roundNumber < 10 ?
                 <Button onClick={newRound}>Next Round</Button>
                 :
                 <Button onClick={endGame}>See Results!</Button>

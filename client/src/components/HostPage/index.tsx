@@ -26,7 +26,8 @@ export function HostPage() {
         if (socketService.socket)
             roomService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
-                dispatch({ type: 'playerList/setAllPlayers', payload: playerNames }); // Dispatch action to set playerList
+                dispatch({ type: 'playerList/setAllPlayers', payload: playerNames }); // Dispatch action to set all players
+                dispatch({ type: 'playerList/setAlivePlayers', payload: playerNames }); // All players start alive
                 dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to set number of players
             });
     };
@@ -56,12 +57,10 @@ export function HostPage() {
             dispatch({ type: 'question/set', payload: joined }); // Set the round's question
             dispatch({ type: 'gameStats/setGameStarted', payload: true}); // Start the game
             dispatch({ type: 'gameStats/setRoundInProgress', payload: true}); // Start a round
-            dispatch({ type: 'gameStats/incrementRoundNumber'}); // Increment round number
+            dispatch({ type: 'gameStats/setRoundNumber', payload: 1}); // Increment round number
             dispatch({ type: 'gameStates/setGameType', payload: 'Trivalry'}); // EVENTUALLY THIS WILL CHANGE WHEN MORE GAMES AVAILABLE
         }
     } 
-
-    
 
     useEffect(() => {
         handlePlayerJoin(); // Constantly listen for players joining

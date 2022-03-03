@@ -45,8 +45,8 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
             return { ...state, gameStarted: action.payload}
         case 'gameStats/setGameOver': 
             return { ...state, gameOver: action.payload}
-        case 'gameStats/incrementRoundNumber': {
-            return {...state, roundNumber: state.roundNumer + 1}
+        case 'gameStats/setRoundNumber': {
+            return {...state, roundNumber: action.payload}
         }
         default:
             return state
@@ -113,11 +113,11 @@ export function playerReducer(state = initialPlayer, action: any) {
         case 'player/setRoundResult': {
             return {...state, roundResult: action.payload}
         }
-        case 'player/increaseScore': {
-            return {...state, score: state.score + action.payload}
+        case 'player/setScore': {
+            return {...state, score: action.payload}
         }
         case 'player/attackPlayer': {
-            return {...state, score: state.score - 50}
+            return {...state, score: action.payload}
         }
         default:
             return state

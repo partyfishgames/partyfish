@@ -45,7 +45,9 @@ class GameService {
     // This function sends out the ids of correct answers at the end of the round
     public async endRound(socket: Socket, playerAnswers: any, alivePlayers: any): Promise<string> {
         return new Promise((rs, _) => {
-            socket.emit("round_over", playerAnswers, alivePlayers);
+            console.log('alivePlayers in gameController:')
+            console.log(alivePlayers)
+            socket.emit("round_over", {answers: playerAnswers, playersAlive: alivePlayers});
 
             rs("Round Completed");
             // TODO: Receive confirmation or something, error checking

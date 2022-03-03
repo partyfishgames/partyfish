@@ -65,6 +65,7 @@ export function QuestionPage() {
 
             console.log(correctAnswers);
             console.log(playerScores);
+            console.log(playerLists.alivePlayers);
 
             // Send the player answer results to the server
             const socket: any = socketService.socket;
