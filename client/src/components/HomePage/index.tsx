@@ -8,8 +8,8 @@ export function HomePage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
     // Variables to hold the intermediate entry while the user is typing
-    const [ playerRoomCode, setPlayerRoomCode ] = useState('');
-    const [ pUsername, setPUsername ] = useState('');
+    const [playerRoomCode, setPlayerRoomCode] = useState('');
+    const [pUsername, setPUsername] = useState('');
 
     // This function is called when the user types something in the room code textfield
     // and updates the state
@@ -41,8 +41,8 @@ export function HomePage() {
         if (joined) {
 
             // Update global redux state's room code and set user to 'Host' 
-            dispatch({type: 'gameStats/setGameCode', payload: joined});
-            dispatch({type: 'player/setUsername', payload: 'Host'});
+            dispatch({ type: 'gameStats/setGameCode', payload: joined });
+            dispatch({ type: 'player/setUsername', payload: 'Host' });
         }
     }
 
@@ -52,17 +52,21 @@ export function HomePage() {
         // Prevent the page from refreshing
         e.preventDefault();
 
-        // Get our socket and tell the server to join a room with the current id and our username
-        const socket: any = socketService.socket;
-        const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
-            alert(err);
-        });
+        if (pUsername.length === 0) {
+            alert("Please enter a username!");
+        } else {
+            // Get our socket and tell the server to join a room with the current id and our username
+            const socket: any = socketService.socket;
+            const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
+                alert(err);
+            });
 
-        if (joined) {
+            if (joined) {
 
-            // Update global redux state's room code and user's name
-            dispatch({type: 'gameStats/setGameCode', payload: joined});
-            dispatch({type: 'player/setUsername', payload: pUsername});
+                // Update global redux state's room code and user's name
+                dispatch({ type: 'gameStats/setGameCode', payload: joined });
+                dispatch({ type: 'player/setUsername', payload: pUsername });
+            }
         }
     }
 
