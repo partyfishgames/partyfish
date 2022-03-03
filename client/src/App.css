@@ -40,3 +40,6 @@ h1, h2, h3, h4 {
     transform: rotate(360deg);
   }
 }
+
+/* import google fonts below */
+@import url('https://fonts.googleapis.com/css2?family=Chicle&display=swap'); 
