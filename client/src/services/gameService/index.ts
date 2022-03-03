@@ -37,6 +37,11 @@ class GameService {
         socket.on("send_result", (result, incorrectUsers) => listener(result, incorrectUsers));
     }
 
+    // This function listens for the players' attacks received by others from the server at the end of a round
+    public async onAttacked(socket: Socket, listener: (attacker: string) => void) {
+        socket.on("send_attack", (attacker) => listener(attacker));
+    }
+
     // This function sends out the ids of correct answers at the end of the round
     public async endRound(socket: Socket, playerAnswers: any): Promise<string> {
         return new Promise((rs, _) => {
