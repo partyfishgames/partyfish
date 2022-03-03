@@ -33,7 +33,6 @@ export class GameController {
         ];
         let random_index = Math.floor(Math.random() * backupQuestions.length);
 
-        // const question = sampleQuestions[random_index];
         let question = await newQuestion();
         if(question.length <= 1) {
             question = backupQuestions[random_index];
