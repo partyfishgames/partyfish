@@ -8,31 +8,34 @@ import gameService from '../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores
-const selectQuestion = (state: { question: any }) => state.question; // select for game stats
-const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state
+const selectQuestion = (state: { question: any }) => state.question; // select for round question
+const selectPlayerLists = (state: { playerLists: any; }) => state.playerLists; // select for player lists state
 
 export function QuestionPage() {
 
-    const playerScores = useAppSelector(selectScores); // Grab players scores from the global state
-    const playerAnswers = useAppSelector(selectAnswers); // Grab our player's answers from the global state
-    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
-    const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
+
+    // subscribe variables to changes in the global state from dispatched actions
+    const playerScores = useAppSelector(selectScores); 
+    const playerAnswers = useAppSelector(selectAnswers); 
+    const question = useAppSelector(selectQuestion); 
+    const playerLists = useAppSelector(selectPlayerLists); 
 
     // Timer functionality for gameplay => begin the timer 
     const [timeRemaining, setTimeRemaining] = useState(30);
     const [timerActive, setTimerActive] = useState(true);
 
     useEffect(() => {
+        
         // Listen for the player answer event from gameService and update our state if one answers
         const handlePlayerAnswer = () => {
             if (socketService.socket)
-            gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
-                console.log(username + ' answered ' + answerId);
-                const answerPayload = Object();
-                answerPayload[username] = [ answerId, timeRemaining ];
-                dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
-            });
+                gameService.onUpdateAnswers(socketService.socket, (username, answerId) => {
+                    console.log(username + ' answered ' + answerId);
+                    const answerPayload = Object();
+                    answerPayload[username] = [ answerId, timeRemaining ];
+                    dispatch({ type: 'answers/addAnswer', payload: answerPayload }); // Dispatch action to add player answer
+                });
         };
 
         // This function is called when the round is over to emit which players were correct/incorrect
@@ -40,7 +43,7 @@ export function QuestionPage() {
 
             // End round cleanup
             setTimerActive(false);
-            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false }); // end the current round
+            dispatch({ type: 'gameStats/setRoundInProgress', payload: false }); // end the current round
             console.log(playerAnswers);
 
             let correctAnswers = Object();
@@ -57,7 +60,7 @@ export function QuestionPage() {
                 const previousScore = playerScores[player] || 0;
                 const scorePayload = Object();
                 scorePayload[player] = score + previousScore;
-                dispatch({ type: 'scores/addScore', payload:  scorePayload }); // end the current round
+                dispatch({ type: 'scores/addScore', payload:  scorePayload }); // update player scores 
             }
 
             console.log(correctAnswers);
@@ -83,8 +86,8 @@ export function QuestionPage() {
             interval = window.setInterval(() => {
                 console.log(timeRemaining);
                 setTimeRemaining(seconds => seconds - 1);
-                if (timeRemaining <= 1 || playerList.length === Object.keys(playerAnswers).length) {
-                    // Timer is up or all players answered
+                if (timeRemaining <= 1 || playerLists.alivePlayers.length === Object.keys(playerAnswers).length) {
+                    // Timer is up or all alive players answered
                     endRound();
                 }
             }, 1000);
@@ -96,7 +99,7 @@ export function QuestionPage() {
             socketService.socket?.removeAllListeners("update_answer");
         };
 
-    }, [timerActive, timeRemaining, playerList.length, playerScores, playerAnswers, question, dispatch]);
+    }, [timerActive, timeRemaining, playerLists.alivePlayers.length, playerScores, playerAnswers, question, dispatch]);
 
     function LinearProgressWithLabel() {
         return (

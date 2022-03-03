@@ -8,25 +8,26 @@ import { useAppDispatch } from "../../hooks";
 import { QuestionPage } from "./containers/QuestionPage/index";
 import { LeaderboardPage } from "./containers/LeaderboardPage";
 
-const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
+const selectPlayersList = (state: { playerLists: any; }) => state.playerLists; // select for player lists state 
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
 export function HostPage() {
 
-    const initialHealth = 250;
-
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
-    const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
-    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
+    // subscribe variables to changes in the global state from dispatched actions
+    const playerLists = useAppSelector(selectPlayersList); 
+    const gameStats = useAppSelector(selectGameStats); 
 
-    // Listen for the player join event from roomService and update our state if one joins
+    const initialScore = 250; // every player begins with a score of 250
+
+    // Listen for the player join event from roomService and update state if one joins
     const handlePlayerJoin = () => {
         if (socketService.socket)
             roomService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
-                dispatch({ type: 'playerList/set', payload: playerNames }); // Dispatch action to change playerList
-                dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to change playerList
+                dispatch({ type: 'playerList/setAllPlayers', payload: playerNames }); // Dispatch action to set playerList
+                dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to set number of players
             });
     };
 
@@ -45,24 +46,25 @@ export function HostPage() {
         // Update state variables to display the new host screen
         if (joined) {
             console.log(joined);
-            const playerHealthsObj = Object();
-            playerList.forEach((username : string) => {
-                playerHealthsObj[username] = initialHealth;
+
+            const playerScoresObj = Object();
+            playerLists.allPlayers.forEach((username : string) => {
+                playerScoresObj[username] = initialScore;
             });
-            dispatch({ type: 'health/addHealth', payload: playerHealthsObj });
-            dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+
+            dispatch({ type: 'scores/addScore', payload: playerScoresObj }); // Set all players' scores to 250 at the start 
+            dispatch({ type: 'question/set', payload: joined }); // Set the round's question
+            dispatch({ type: 'gameStats/setGameStarted', payload: true}); // Start the game
+            dispatch({ type: 'gameStats/setRoundInProgress', payload: true}); // Start a round
+            dispatch({ type: 'gameStats/incrementRoundNumber'}); // Increment round number
+            dispatch({ type: 'gameStates/setGameType', payload: 'Trivalry'}); // EVENTUALLY THIS WILL CHANGE WHEN MORE GAMES AVAILABLE
         }
     } 
 
     
 
     useEffect(() => {
-
-        // Constantly listen for player joining
-        handlePlayerJoin();
-
+        handlePlayerJoin(); // Constantly listen for players joining
     });
 
     function WaitingRoom() {
@@ -79,13 +81,13 @@ export function HostPage() {
                         <h4>Room Code</h4>
                         <h1>{gameStats.gameCode}</h1>
                         <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.app and enter code to join!</h4>
-                        <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
+                        <Button onClick={startGame} variant={playerLists.allPlayers.length > 2 ? "contained" : "outlined"} disabled={playerLists.allPlayers.length > 2 ? false : true}>
                             Start Game
                         </Button>
                     </Grid>
                     <Grid item xs={5}>
                         <h2>Players</h2>
-                        {playerList.map((player: string) =>
+                        {playerLists.allPlayers.map((player: string) =>
                             <h4 key={player}>{player}</h4>
                         )}
                     </Grid>
