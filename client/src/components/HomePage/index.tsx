@@ -49,13 +49,17 @@ export function HomePage() {
 
         // Prevent the page from refreshing
         e.preventDefault();
+
+        // Trimming room code and username to prevent spacing issues
+        const trimmedUsername = pUsername.trim();
+        const trimmedRoom = playerRoomCode.trim();
       
-        if (pUsername.trim().length === 0) {
+        if (trimmedUsername.length === 0) {
             alert("Please enter a username!");
         } else {
             // Get our socket and tell the server to join a room with the current id and our username
             const socket: any = socketService.socket;
-            const joined = await roomService.joinRoom(socket, playerRoomCode.trim(), pUsername.trim()).catch((err) => {
+            const joined = await roomService.joinRoom(socket, trimmedRoom, trimmedUsername).catch((err) => {
                 alert(err);
             });
 
@@ -63,7 +67,7 @@ export function HomePage() {
 
                 // Update global redux state's room code and user's name
                 dispatch({ type: 'gameStats/setGameCode', payload: joined });
-                dispatch({ type: 'player/setUsername', payload: pUsername.trim() });
+                dispatch({ type: 'player/setUsername', payload: trimmedUsername });
             }
         }
     }
