@@ -3,6 +3,8 @@ import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketDa
 import { Server, Socket } from "socket.io";
 import { getSocketGameRoom } from "../utils/roomUtils";
 
+import { newQuestion } from "../utils/questionUtil";
+
 @SocketController()
 export class GameController {
 
@@ -27,15 +29,18 @@ export class GameController {
         // TODO: Implement database question gathering
         // Current format is [question, ans1, ans2, ans3, correct_answer_index]
 
-        const sampleQuestions = [
+        const backupQuestions = [
             ['What nationality is Cristiano Ronaldo?', 'Portugese', 'French', 'Spanish', '1'],
             ['In Minnesota, it is illegal to tease what type of animal?', 'Squirrels', 'Beavers', 'Skunks', '3'],
             ['How long is New Zealand’s Ninety Mile Beach?', '90 miles', '55 miles', '87 miles', '2'],
             ['What fictional character is believed to be real by more than 25% of Americans?', 'James Bond', 'Sherlock Holmes', 'Harry Potter', '2']
         ];
-        let random_index = Math.floor(Math.random() * sampleQuestions.length);
+        let random_index = Math.floor(Math.random() * backupQuestions.length);
 
-        const question = sampleQuestions[random_index];
+        let question = await newQuestion();
+        if(question.length <= 1) {
+            question = backupQuestions[random_index];
+        }
 
         // Get game room to broadcast question to
         const gameRoom = getSocketGameRoom(socket);

@@ -7,9 +7,11 @@
     "dry-build": "tsc --build && tsc --build --clean"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.53.0",
     "@types/models": "file:../models",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.0",
     "express": "~4.16.1",
     "glob": "^7.2.0",
     "http-errors": "~1.6.3",
