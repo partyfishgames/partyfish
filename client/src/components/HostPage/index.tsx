@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid, createTheme, ThemeProvider, Typography, makeStyles, Paper } from "@mui/material";
 import { useEffect } from "react";
 import { useAppSelector } from "../../hooks";
 import roomService from "../../services/roomService";
@@ -12,6 +12,35 @@ const selectPlayerList = (state: { playerList: any; }) => state.playerList; // s
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
 export function HostPage() {
+
+    const islandTheme = createTheme({
+        typography: {
+            fontFamily: [
+                'Syne Mono', 
+                'monospace'
+            ].join(','),
+            fontSize: 22,
+            fontWeightRegular:500,
+        },
+        palette: {
+            primary: {
+                main: "#A6CF98", // light green
+            },
+            secondary: {
+                main: "#E3CAA5", // light brown
+            }, 
+            success: {
+                main: "#557C55", // dark green
+            },
+            error: {
+                main: "#D29D2B", // burnt yellow
+            },
+            background:{
+                paper: "#AD8B73", // dark brown
+            }
+        },
+        }
+    );
 
     const initialHealth = 250;
 
@@ -68,34 +97,70 @@ export function HostPage() {
     function WaitingRoom() {
         return (
             <div>
-                <h1 style={{ color: "#2196f3" }}>Let's Play Trivalry!</h1>
-                <Grid container
-                    direction="row"
-                    style={{ height: '300px' }}
-                    justifyContent="center"
-                    alignItems="center"
-                >
-                    <Grid item xs={5}>
-                        <h4>Room Code</h4>
-                        <h1>{gameStats.gameCode}</h1>
-                        <h4 style={{ paddingLeft: "15px", paddingRight: "15px" }}>Go to partyfish.app and enter code to join!</h4>
-                        <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
-                            Start Game
-                        </Button>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <h2>Players</h2>
-                        {playerList.map((player: string) =>
-                            <h4 key={player}>{player}</h4>
-                        )}
-                    </Grid>
-                </Grid>
+                <ThemeProvider theme={islandTheme}>
+                    <Box bgcolor="#C5D8A4">
+                        <Box sx={{ mx: 8,  my: 2, pt:2 }}>
+                            <Paper elevation={3} sx={{py: 2, px: 30}}>
+                            <Typography component="h1" color="secondary">
+                                Let's Play Trivalry!
+                            </Typography>
+                            </Paper>
+                        </Box>
+                        <Box sx={{mx:10,}}>
+                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                                <Typography color="secondary">Go to partyfish.app to join!</Typography>
+                            </Paper>
+                        </Box>
+                        <Box sx={{mx: 12,my: 2, pb:2 }}>
+                            <Paper elevation={3} sx={{py: 2, px: 1}}>
+                                <Grid container
+                                    direction="row"
+                                    style={{ height: '600px' }}
+                                    justifyContent="center"
+                                    alignItems="center"
+                                >   
+                                    <Grid item xs={6}>
+                                        <Box sx={{mx:5, my:1}} >
+                                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#E3CAA5", height: "350px"}}>
+                                                <Typography color="error">Room Code</Typography>
+                                                <Box sx={{mx:1, my:14}}>
+                                                    <Typography>{gameStats.gameCode}</Typography>
+                                                </Box>
+                                            </Paper>
+                                        </Box>
+                                    </Grid>   
+                                    <Grid item xs={6}>
+                                        <Box sx={{mx:5, my:1}} >
+                                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#E3CAA5", height: "350px"}}>
+                                                <Typography color="error">Players</Typography>
+                                                {playerList.map((player: string) =>
+                                                    <Typography key={player}>{player}</Typography>
+                                                )}
+                                            </Paper>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Box sx={{mx:24, my:1}}>
+                                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                                                <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
+                                                    <Typography color="error">
+                                                        Start Game
+                                                    </Typography>
+                                                </Button>
+                                            </Paper>
+                                        </Box>
+                                    </Grid> 
+                                </Grid>
+                            </Paper>
+                        </Box>
+                    </Box>
+                </ThemeProvider>
             </div>
         );
     }
 
     return (
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center"}}>
             { gameStats.roundInProgress ? <QuestionPage /> : (!gameStats.gameStarted) ? <WaitingRoom /> : <LeaderboardPage /> }
         </div>
     );
