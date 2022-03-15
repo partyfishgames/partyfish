@@ -1,11 +1,22 @@
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField, Paper, Box, createTheme, ThemeProvider, Typography } from "@mui/material";
 import React, { useState } from "react";
 import roomService from "../../services/roomService";
 import socketService from "../../services/socketService";
 import { useAppDispatch } from "../../hooks";
 
+import Bubbles from "../../images/bubbles.png";
+
 export function HomePage() {
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
+
+    const cartoonTheme = createTheme({
+        typography: {
+            fontFamily: [
+                'Chicle',
+                'cursive',
+            ].join(','),
+        },
+    });
 
     // Variables to hold the intermediate entry while the user is typing
     const [playerRoomCode, setPlayerRoomCode] = useState('');
@@ -53,7 +64,7 @@ export function HomePage() {
         // Trimming room code and username to prevent spacing issues
         const trimmedUsername = pUsername.trim();
         const trimmedRoom = playerRoomCode.trim().toLowerCase();
-      
+
         if (trimmedUsername.length === 0) {
             alert("Please enter a username!");
         } else {
@@ -74,42 +85,136 @@ export function HomePage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            <h1 style={{ color: "#2196f3" }}>Welcome to PartyFish</h1>
-
-            <Grid container
-                spacing={1}
-                style={{ height: '300px' }}
-                justifyContent="center"
-                alignItems="center"
+            <Box sx={{ mx: 2, my: 2 }}>
+                <Paper
+                    elevation={4}
+                    sx={{
+                        mx: 2,
+                        my: 2,
+                        backgroundSize: "cover",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                        backgroundImage: `url(${Bubbles})`,
+                    }}
+                >
+                    <ThemeProvider theme={cartoonTheme}>
+                        <Typography padding={1} component="h1" variant="h3" color="2196f3" gutterBottom>
+                            Welcome to PartyFish
+                        </Typography>
+                    </ThemeProvider>
+                </Paper>
+            </Box>
+            <Paper
+                elevation={3}
+                sx={{
+                    mx: 12,
+                    my: 3,
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                    backgroundImage: `url(${Bubbles})`,
+                }}
             >
-                <Grid item xs={5}>
-                    <Grid container
-                        direction="row"
+                <Box sx={{ paddingTop: 1 }}>
+                    <Paper elevation={3} sx={{ my: 2, mx: 12 }}>
+                        <h3 style={{ color: "#2196f3", background: "#FFE6AB", padding: 5 }}>
+                            What would you like to do?
+                        </h3>
+                    </Paper>
+                    <Grid
+                        container
+                        spacing={2}
+                        style={{ height: '300px' }}
                         justifyContent="center"
-                        alignItems="center">
+                        alignItems="center"
+                    >
                         <Grid item>
-                            <form onSubmit={hostRoom}>
-                                <Button variant="contained" type="submit">Host Room</Button>
-                            </form >
+                            <Grid
+                                container
+                                spacing={2}
+                                direction="row"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Paper
+                                    elevation={4}
+                                    sx={{ px: 1, py: 1, mx: 1, my: 1 }}
+                                    style={{
+                                        background: "#FFE6AB",
+                                        height: "250px",
+                                        width: "250px",
+                                    }}
+                                >
+                                    <Grid item>
+                                        <form onSubmit={hostRoom}>
+                                            <Button
+                                                variant="contained"
+                                                type="submit"
+                                                style={{ color: "#2196f3" }}
+                                                sx={{
+                                                    mx: 6,
+                                                    my: 12,
+                                                    backgroundSize: "cover",
+                                                    backgroundRepeat: "no-repeat",
+                                                    backgroundPosition: "center",
+                                                    backgroundImage: `url(${Bubbles})`,
+                                                }}
+                                            >
+                                                Host Room
+                                            </Button>
+                                        </form >
+                                    </Grid>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <Grid
+                                container
+                                spacing={2}
+                                direction="column"
+                                justifyContent="space-around"
+                                alignItems="center"
+                            >
+                                <Paper
+                                    elevation={4}
+                                    sx={{ px: 1, py: 1, mx: 1, my: 1 }}
+                                    style={{
+                                        background: "#FFE6AB",
+                                        height: "250px",
+                                        width: "250px",
+                                    }}
+                                >
+                                    <Grid item sx={{ px: 1, py: 1, mt: 4 }}>
+                                        <TextField autoComplete="false" spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" style={{ background: "#DFF6FF" }} />
+                                    </Grid>
+                                    <Grid item>
+                                        <TextField autoComplete="false" spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" style={{ background: "#DFF6FF" }} />
+                                    </Grid>
+                                    <Grid item sx={{ px: 1, py: 1 }}>
+                                        <form onSubmit={joinRoom}>
+                                            <Button
+                                                variant="contained"
+                                                type="submit"
+                                                style={{ color: "#2196f3" }}
+                                                sx={{
+                                                    mb: 4,
+                                                    backgroundSize: "cover",
+                                                    backgroundRepeat: "no-repeat",
+                                                    backgroundPosition: "center",
+                                                    backgroundImage: `url(${Bubbles})`,
+
+                                                }}
+                                            >
+                                                Join Room
+                                            </Button>
+                                        </form>
+                                    </Grid>
+                                </Paper>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid item xs={5}>
-                    <Grid container spacing={2} direction="column" justifyContent="space-around" alignItems="center">
-                        <Grid item>
-                            <TextField autoComplete="false" spellCheck="false" value={playerRoomCode} onChange={handleRoomCodeChange} id="outlined-basic" label="Room Code" variant="outlined" />
-                        </Grid>
-                        <Grid item>
-                            <TextField autoComplete="false" spellCheck="false" value={pUsername} onChange={handleUsernameChange} id="outlined-basic" label="Username" variant="outlined" />
-                        </Grid>
-                        <Grid item>
-                            <form onSubmit={joinRoom}>
-                                <Button variant="contained" type="submit">Join Room</Button>
-                            </form>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
+                </Box>
+            </Paper>
         </div>
     );
 }
