@@ -134,6 +134,7 @@ export function PlayerPage() {
             socketService.socket?.removeAllListeners('send_result');
             socketService.socket?.removeAllListeners('send_question');
             socketService.socket?.removeAllListeners('game_completed');
+            socketService.socket?.removeAllListeners('send_attack');
         }
     });
 
