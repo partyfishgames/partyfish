@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
+import {Box, createTheme, ThemeProvider, Typography, Paper } from "@mui/material";
 
 import gameService from "../../services/gameService";
 import socketService from "../../services/socketService";
@@ -16,6 +17,37 @@ const selectGameStats = (state: { gameStats: any }) => state.gameStats; // selec
 const selectPlayer = (state: { player: any }) => state.player; // select for player 
 
 export function PlayerPage() {
+    const islandTheme = createTheme({ 
+        typography: {
+            fontFamily: [
+                'Syne Mono', 
+                'monospace'
+            ].join(','),
+            fontSize: 22,
+            fontWeightRegular:500,
+        },
+        palette: {
+            primary: {
+                main: "#A6CF98", // light green
+            },
+            secondary: {
+                main: "#E3CAA5", // light brown
+            }, 
+            success: {
+                main: "#557C55", // dark green
+            },
+            error: {
+                main: "#D29D2B", // burnt yellow
+            },
+            info: {
+                main: "#85F4FF" // cyan blue
+            },
+            background:{
+                paper: "#AD8B73", // dark brown
+            }
+        },
+    }
+);
 
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
@@ -136,15 +168,31 @@ export function PlayerPage() {
                     {isLoading ?
                         <CircularProgress style={{ marginTop: "25px" }} /> :
                         <div>
-                            <h3>{question[0]}</h3>
-                            <ButtonGroup
-                                orientation="vertical"
-                                aria-label="vertical outlined button group"
-                            >
-                                <Button onClick={sendAnswer} id="1" key="1">{question[1]}</Button>
-                                <Button onClick={sendAnswer} id="2" key="2">{question[2]}</Button>
-                                <Button onClick={sendAnswer} id="3" key="3">{question[3]}</Button>
-                            </ButtonGroup>
+                            <ThemeProvider theme={islandTheme}>
+                                <Box bgcolor="#AD8B73" sx={{mx:1,my:1}}>
+                                    <Box sx={{my:2,mx:2, pt:2}}>
+                                        <Paper elevation={4} sx={{py: 2, px: 2}} style={{background:"#557C55"}}>
+                                            <Typography component='h3' color='#85F4FF'>{question[0]}</Typography>
+                                        </Paper>
+                                    </Box>
+                                    <Box >
+                                        <ButtonGroup
+                                            orientation="vertical"
+                                            aria-label="vertical outlined button group"
+                                        > 
+                                            <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}} >
+                                                <Button style={{background:"#557C55" }} onClick={sendAnswer} id="1" key="1">{question[1]}</Button>
+                                            </Paper>
+                                            <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>
+                                                <Button style={{background:"#557C55" }} onClick={sendAnswer} id="2" key="2">{question[2]}</Button>
+                                            </Paper>
+                                            <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}} >
+                                                <Button  style={{background:"#557C55" }} onClick={sendAnswer} id="3" key="3">{question[3]}</Button> 
+                                            </Paper> 
+                                        </ButtonGroup>
+                                    </Box>
+                                </Box>
+                            </ThemeProvider>
                         </div>
                     }
                 </Grid>
@@ -168,31 +216,51 @@ export function PlayerPage() {
             <div>
                 {player.roundResult > 0 ?
                     <div>
-                        <h3>{randomAnswer(true)}</h3>
-                        <h2>Awarded {player.roundResult} points!</h2>
-                        <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
-                        <h3>You have {gameStats.points} pts</h3>
-                        <h4>Choose a player to attack:</h4>
-                        <ButtonGroup
-                            orientation="vertical"
-                            aria-label="vertical outlined button group"
-                        >
-                            {usernamesAtRisk.length > 0 ? !attacked ?
-                                usernamesAtRisk.map((username, idx) => (
-                                    <Button onClick={() => attackPlayer(username)} key={idx}>{username}</Button>
-                                )) : <h4>Waiting for other attacks...</h4>
-                                :
-                                <h4>Everyone is safe!</h4>
-                            }
+                        <ThemeProvider theme={islandTheme}>
+                            <Box bgcolor="#557C55" sx={{mx:1, my:1,px:2,py:2}}>
+                                <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}}>
+                                    <Typography component="h3" color="primary">{randomAnswer(true)}</Typography>
+                                    <Paper elevation={3} sx={{mx:10,my:2,px:1, py:1}} style={{background: "#E3CAA5" }}>
+                                        <Typography component="h2" color="#557C55">Awarded {player.roundResult} points!</Typography>
+                                        <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
+                                        <Typography component="h2" color="#557C55">You have {gameStats.points} pts</Typography>
+                                    </Paper>
+                                    <Typography component="h4" color="primary">Choose a player to attack:</Typography>
+                                    <ButtonGroup
+                                        orientation="vertical"
+                                        aria-label="vertical outlined button group"
+                                    >
+                                        {usernamesAtRisk.length > 0 ? !attacked ?
+                                            usernamesAtRisk.map((username, idx) => (
+                                                <Button style={{color: "#D29D2B", background:"#557C55" }} onClick={() => attackPlayer(username)} key={idx}>{username}</Button>
+                                            )) : 
+                                            
+                                                <Typography component="h3" color="secondary">Waiting for others...</Typography>
+                        
+                                            :
+                                            <Typography component="h3" color="secondary">Everyone is safe!</Typography>
+                                        }
 
-                        </ButtonGroup>
+                                    </ButtonGroup>
+                                </Paper>
+                            </Box>
+                        </ThemeProvider>
                     </div>
                     :
                     <div>
-                        <h3>{randomAnswer(false)}</h3>
-                        <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
-                        <h3>You have {gameStats.points} pts</h3>
-                        <h4>Opponents are choosing your fate...</h4>
+                       <ThemeProvider theme={islandTheme}>
+                            <Box bgcolor="#557C55" sx={{mx:1, my:1,px:2,py:2}}>
+                                <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}}>
+                                    <Typography component="h3" color="#9B0000">{randomAnswer(false)}</Typography>
+                                    <Paper elevation={3} sx={{mx:10,my:2,px:1, py:1}} style={{background: "#E3CAA5" }}>
+                                        <Typography component="h2" color="#557C55">No points earned :(</Typography>
+                                        <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
+                                        <Typography component="h2" color="#557C55">You have {gameStats.points} pts</Typography>
+                                    </Paper>
+                                    <Typography component="h3" color="#9B0000">Opponents are choosing your fate...</Typography>
+                                </Paper>
+                            </Box>
+                        </ThemeProvider>
                     </div>
                 }
             </div>
@@ -202,7 +270,7 @@ export function PlayerPage() {
     function GameOver() {
         return (
             <div>
-                <h1>Thanks for playing!</h1>
+                <Typography component="h1" color="#557C55">Thanks for playing!</Typography>
                 <img src={PepeHappy} style={{ height: "100px", width: "auto" }} alt="pepefinish"></img>
             </div>
         )
@@ -210,11 +278,25 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> : 
+            <ThemeProvider theme={islandTheme}>
+           
+            {!gameStats.gameStarted ? 
+            <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
+                <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>
+                    <Typography component='h3' color="#557C55">{waitingText}</Typography> 
+                </Paper>
+            </Box>
+            : (gameOver ? <GameOver /> : 
                 (gameStats.health === 0 ? <h3>You're dead, lol.</h3> :
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
-                        <h3>{waitingText}</h3>))))}
+                    <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
+                        <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>    
+                            <Typography component='h3' color="#557C55">{waitingText}</Typography>
+                       </Paper>
+                     </Box>
+                       ))))}
+            </ThemeProvider>
         </div>
     );
 }
