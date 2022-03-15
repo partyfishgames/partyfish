@@ -76,9 +76,7 @@ export function LeaderboardPage() {
                 if (playerScoresObj[target] <= 0) {
                     // player died 
                     let alive = playerLists.alivePlayers.filter((player: string) => player !== target);
-                    let dead = playerLists.deadPlayers.push(target);
                     dispatch({ type: 'playerLists/setAlivePlayers', payload: alive});
-                    dispatch({ type: 'playerLists/setDeadPlayers', payload: dead});
                 }
             });
     };
