@@ -108,7 +108,7 @@ export class GameController {
                 socket.to(player).emit("send_result", playerInfo.answers[username], aliveUsers);
             } else {
                 // No answer was received from them
-                socket.to(player).emit("send_result", 0);
+                socket.to(player).emit("send_result", 0, aliveUsers);
             }
         });
     }
