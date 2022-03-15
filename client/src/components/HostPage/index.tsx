@@ -99,19 +99,19 @@ export function HostPage() {
             <div>
                 <ThemeProvider theme={islandTheme}>
                     <Box bgcolor="#C5D8A4">
-                        <Box sx={{ mx: 8,  my: 2, pt:2 }}>
-                            <Paper elevation={3} sx={{py: 2, px: 30}}>
+                        <Box sx={{ mx: 4,  my: 2, pt:2 }}>
+                            <Paper elevation={3} sx={{py: 2,px:2}}>
                             <Typography component="h1" color="secondary">
                                 Let's Play Trivalry!
                             </Typography>
                             </Paper>
                         </Box>
-                        <Box sx={{mx:10,}}>
+                        <Box sx={{mx:5,}}>
                             <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
                                 <Typography color="secondary">Go to partyfish.app to join!</Typography>
                             </Paper>
                         </Box>
-                        <Box sx={{mx: 12,my: 2, pb:2 }}>
+                        <Box sx={{mx: 6,my: 2, pb:2 }}>
                             <Paper elevation={3} sx={{py: 2, px: 1}}>
                                 <Grid container
                                     direction="row"
@@ -120,7 +120,7 @@ export function HostPage() {
                                     alignItems="center"
                                 >   
                                     <Grid item xs={6}>
-                                        <Box sx={{mx:5, my:1}} >
+                                        <Box sx={{mx:1, my:1}} >
                                             <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#E3CAA5", height: "350px"}}>
                                                 <Typography color="error">Room Code</Typography>
                                                 <Box sx={{mx:1, my:14}}>
@@ -130,8 +130,8 @@ export function HostPage() {
                                         </Box>
                                     </Grid>   
                                     <Grid item xs={6}>
-                                        <Box sx={{mx:5, my:1}} >
-                                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#E3CAA5", height: "350px"}}>
+                                        <Box sx={{mx:1, my:1}} >
+                                            <Paper elevation={3} sx={{py: 2, }} style={{background: "#E3CAA5", height: "350px"}}>
                                                 <Typography color="error">Players</Typography>
                                                 {playerList.map((player: string) =>
                                                     <Typography key={player}>{player}</Typography>
@@ -140,8 +140,8 @@ export function HostPage() {
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <Box sx={{mx:24, my:1}}>
-                                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                                        <Box sx={{mx:6, my:1}}>
+                                            <Paper elevation={3} sx={{py: 1, px: 1}} style={{background: "#557C55"}}>
                                                 <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
                                                     <Typography color="error">
                                                         Start Game
