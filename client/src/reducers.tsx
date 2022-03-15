@@ -56,17 +56,14 @@ export function gameStatsReducer(state = initialGameStats, action: any) {
 // Reducer to respond to actions regarding the list of players 
 export function playerListsReducer(state = initialPlayerLists, action: any) {
     switch (action.type) {
-        case 'playerList/setAllPlayers': {
+        case 'playerLists/setAllPlayers': {
           return {...state, allPlayers: action.payload}
         }
-        case 'playerList/setAlivePlayers': {
+        case 'playerLists/setAlivePlayers': {
             return {...state, alivePlayers: action.payload}
         }
-        case 'playerList/removeAlivePlayer': {
-            return {...state, alivePlayers: state.alivePlayers.filter((player: string) => player !== action.payload)}
-        }
-        case 'playerList/addDeadPlayer': {
-            return {...state, deadPlayers: [...state.deadPlayers, action.payload]}
+        case 'playerLists/setDeadPlayers': {
+            return {...state, deadPlayers: action.payload}
         }
         default:
             return state

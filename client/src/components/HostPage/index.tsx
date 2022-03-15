@@ -26,8 +26,8 @@ export function HostPage() {
         if (socketService.socket)
             roomService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
-                dispatch({ type: 'playerList/setAllPlayers', payload: playerNames }); // Dispatch action to set all players
-                dispatch({ type: 'playerList/setAlivePlayers', payload: playerNames }); // All players start alive
+                dispatch({ type: 'playerLists/setAllPlayers', payload: playerNames }); // Dispatch action to set all players
+                dispatch({ type: 'playerLists/setAlivePlayers', payload: playerNames }); // All players start alive
                 dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to set number of players
             });
     };

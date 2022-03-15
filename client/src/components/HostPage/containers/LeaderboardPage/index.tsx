@@ -73,17 +73,15 @@ export function LeaderboardPage() {
                 dispatch({ type: 'scores/addScore', payload: playerScoresObj });
                 setAttacks([...attacks, [attacker, target]]); // set the round's attacks for display
 
-                updatePlayerLists(target);
+                if (playerScoresObj[target] <= 0) {
+                    // player died 
+                    let alive = playerLists.alivePlayers.filter((player: string) => player !== target);
+                    let dead = playerLists.deadPlayers.push(target);
+                    dispatch({ type: 'playerLists/setAlivePlayers', payload: alive});
+                    dispatch({ type: 'playerLists/setDeadPlayers', payload: dead});
+                }
             });
     };
-
-    const updatePlayerLists = (target: string) => {
-        if (playerScores[target] <= 0) {
-            // kill player 
-            dispatch({ type: 'playerLists/removeAlivePlayer', payload: target }); 
-            dispatch({ type: 'playerLists/addDeadPlayer', payload: target }); 
-        }
-    }
 
     useEffect(() => {
 
