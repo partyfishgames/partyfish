@@ -287,7 +287,7 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-          <ThemeProvider theme={islandTheme}>           
+            <ThemeProvider theme={islandTheme}>
             {!gameStats.gameStarted ? 
             <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
                 <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>
