@@ -23,13 +23,13 @@ export function PlayerPage() {
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
     const [usernamesAtRisk, setUsernamesAtRisk] = useState<String[]>([]);
     const [attacked, setAttacked] = useState(false);
-    const [gameOver, setGameOver] = useState(false);
 
-    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
-    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
+    // subscribe variables to changes in the global state from dispatched actions
+    const question = useAppSelector(selectQuestion); 
+    const gameStats = useAppSelector(selectGameStats); 
     const player = useAppSelector(selectPlayer);
 
-    // This function is called when the user presses the "host" button
+    // This function is called when the player selects an answer
     const sendAnswer = async (e: React.FormEvent) => {
 
         // Prevent the page from refreshing
@@ -53,7 +53,7 @@ export function PlayerPage() {
         setIsLoading(false);
     }
 
-    // This function is called when the user presses the "host" button
+    // This function is called when the player attacks another 
     const attackPlayer = async (target: any) => {
 
         setIsLoading(true);
@@ -69,33 +69,42 @@ export function PlayerPage() {
 
         console.log(response);
 
-        setWaitingText('Waiting for others to attack');
+        setWaitingText('Waiting for others to attack...');
         setIsLoading(false);
     }
 
     useEffect(() => {
-        // Listen for the player join event from roomService and update our state if one joins
+        // Listen for the a new question from the host 
         const handleNewQuestion = () => {
             if (socketService.socket)
                 gameService.onSendQuestion(socketService.socket, (question) => {
                     console.log(question);
                     setAttacked(false);
-                    dispatch({ type: 'gameStats/toggleGameStarted', payload: true }); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/setGameStarted', payload: true }); // Dispatch action to start game
                     dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true }); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Dispatch action to start round
+                    dispatch({ type: 'gameStats/incrementRoundNumer'}); // Increment the round number
                 });
         };
 
         // Listen for the answer result event
         const handleRoundResult = () => {
             if (socketService.socket)
-                gameService.onResult(socketService.socket, (result, incorrectUsers) => {
+                gameService.onResult(socketService.socket, (result, aliveUsers) => {
                     console.log('round result: ' + result);
-                    setUsernamesAtRisk(incorrectUsers);
+                    console.log('users who can get reduced health:' + aliveUsers)
+
+                    // remove player's own name from list of possible attackers 
+                    aliveUsers.forEach((user,index)=>{
+                        if (user === player.username) aliveUsers.splice(index,1);
+                     });
+                    
+                    setUsernamesAtRisk(aliveUsers);
+
                     dispatch({ type: 'question/set', payload: ['NONE'] });
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false });
+                    dispatch({ type: 'gameStats/setRoundInProgress', payload: false });
                     dispatch({ type: 'player/setRoundResult', payload: result });
-                    dispatch({ type: 'gameStats/setPoints', payload: result + gameStats.points });
+                    dispatch({ type: 'player/setScore', payload: player.score + result });
                 });
         };
 
@@ -104,7 +113,7 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onAttacked(socketService.socket, (attacker) => {
                     console.log(attacker + 'attacked you');
-                    dispatch({ type: 'gameStats/attackPlayer', payload: gameStats.health - 50});
+                    dispatch({ type: 'player/attackPlayer', payload: player.score - 50});
                 });
         };
 
@@ -112,7 +121,7 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onGameEnd(socketService.socket, () => {
                     console.log('Game is over');
-                    setGameOver(true);
+                    dispatch({ type: 'gameStats/setGameOver', payload: true }); // End the game
                 });
         }
 
@@ -125,6 +134,7 @@ export function PlayerPage() {
             socketService.socket?.removeAllListeners('send_result');
             socketService.socket?.removeAllListeners('send_question');
             socketService.socket?.removeAllListeners('game_completed');
+            socketService.socket?.removeAllListeners('send_attack');
         }
     });
 
@@ -160,7 +170,6 @@ export function PlayerPage() {
             return goodAnswers[Math.floor(Math.random() * (goodAnswers.length))];
         }
         return badAnswers[Math.floor(Math.random() * (badAnswers.length))];
-
     }
 
     function RoundResult() {
@@ -171,7 +180,7 @@ export function PlayerPage() {
                         <h3>{randomAnswer(true)}</h3>
                         <h2>Awarded {player.roundResult} points!</h2>
                         <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
-                        <h3>You have {gameStats.points} pts</h3>
+                        <h3>You have {player.score} pts</h3>
                         <h4>Choose a player to attack:</h4>
                         <ButtonGroup
                             orientation="vertical"
@@ -191,7 +200,7 @@ export function PlayerPage() {
                     <div>
                         <h3>{randomAnswer(false)}</h3>
                         <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
-                        <h3>You have {gameStats.points} pts</h3>
+                        <h3>You have {player.score} pts</h3>
                         <h4>Opponents are choosing your fate...</h4>
                     </div>
                 }
@@ -210,8 +219,8 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameOver ? <GameOver /> : 
-                (gameStats.health === 0 ? <h3>You're dead, lol.</h3> :
+            {!gameStats.gameStarted ? <h3>{waitingText}</h3> : (gameStats.gameOver ? <GameOver /> : 
+                (player.score <= 0 ? <h3>You're dead, lol.</h3> :
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
                         <h3>{waitingText}</h3>))))}
