@@ -55,13 +55,13 @@ export function PlayerPage() {
     const [waitingText, setWaitingText] = useState("Waiting for game to start...");
     const [usernamesAtRisk, setUsernamesAtRisk] = useState<String[]>([]);
     const [attacked, setAttacked] = useState(false);
-    const [gameOver, setGameOver] = useState(false);
 
-    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
-    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
+    // subscribe variables to changes in the global state from dispatched actions
+    const question = useAppSelector(selectQuestion); 
+    const gameStats = useAppSelector(selectGameStats); 
     const player = useAppSelector(selectPlayer);
 
-    // This function is called when the user presses the "host" button
+    // This function is called when the player selects an answer
     const sendAnswer = async (e: React.FormEvent) => {
 
         // Prevent the page from refreshing
@@ -85,7 +85,7 @@ export function PlayerPage() {
         setIsLoading(false);
     }
 
-    // This function is called when the user presses the "host" button
+    // This function is called when the player attacks another 
     const attackPlayer = async (target: any) => {
 
         setIsLoading(true);
@@ -101,33 +101,42 @@ export function PlayerPage() {
 
         console.log(response);
 
-        setWaitingText('Waiting for others to attack');
+        setWaitingText('Waiting for others to attack...');
         setIsLoading(false);
     }
 
     useEffect(() => {
-        // Listen for the player join event from roomService and update our state if one joins
+        // Listen for the a new question from the host 
         const handleNewQuestion = () => {
             if (socketService.socket)
                 gameService.onSendQuestion(socketService.socket, (question) => {
                     console.log(question);
                     setAttacked(false);
-                    dispatch({ type: 'gameStats/toggleGameStarted', payload: true }); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/setGameStarted', payload: true }); // Dispatch action to start game
                     dispatch({ type: 'question/set', payload: question }); // Dispatch action to change question
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true }); // Dispatch action to change playerList
+                    dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Dispatch action to start round
+                    dispatch({ type: 'gameStats/incrementRoundNumer'}); // Increment the round number
                 });
         };
 
         // Listen for the answer result event
         const handleRoundResult = () => {
             if (socketService.socket)
-                gameService.onResult(socketService.socket, (result, incorrectUsers) => {
+                gameService.onResult(socketService.socket, (result, aliveUsers) => {
                     console.log('round result: ' + result);
-                    setUsernamesAtRisk(incorrectUsers);
+                    console.log('users who can get reduced health:' + aliveUsers)
+
+                    // remove player's own name from list of possible attackers 
+                    aliveUsers.forEach((user,index)=>{
+                        if (user === player.username) aliveUsers.splice(index,1);
+                     });
+                    
+                    setUsernamesAtRisk(aliveUsers);
+
                     dispatch({ type: 'question/set', payload: ['NONE'] });
-                    dispatch({ type: 'gameStats/toggleRoundInProgress', payload: false });
+                    dispatch({ type: 'gameStats/setRoundInProgress', payload: false });
                     dispatch({ type: 'player/setRoundResult', payload: result });
-                    dispatch({ type: 'gameStats/setPoints', payload: result + gameStats.points });
+                    dispatch({ type: 'player/setScore', payload: player.score + result });
                 });
         };
 
@@ -136,7 +145,7 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onAttacked(socketService.socket, (attacker) => {
                     console.log(attacker + 'attacked you');
-                    dispatch({ type: 'gameStats/attackPlayer', payload: gameStats.health - 50});
+                    dispatch({ type: 'player/attackPlayer', payload: player.score - 50});
                 });
         };
 
@@ -144,7 +153,7 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onGameEnd(socketService.socket, () => {
                     console.log('Game is over');
-                    setGameOver(true);
+                    dispatch({ type: 'gameStats/setGameOver', payload: true }); // End the game
                 });
         }
 
@@ -157,6 +166,7 @@ export function PlayerPage() {
             socketService.socket?.removeAllListeners('send_result');
             socketService.socket?.removeAllListeners('send_question');
             socketService.socket?.removeAllListeners('game_completed');
+            socketService.socket?.removeAllListeners('send_attack');
         }
     });
 
@@ -208,7 +218,6 @@ export function PlayerPage() {
             return goodAnswers[Math.floor(Math.random() * (goodAnswers.length))];
         }
         return badAnswers[Math.floor(Math.random() * (badAnswers.length))];
-
     }
 
     function RoundResult() {
@@ -216,6 +225,7 @@ export function PlayerPage() {
             <div>
                 {player.roundResult > 0 ?
                     <div>
+
                         <ThemeProvider theme={islandTheme}>
                             <Box bgcolor="#557C55" sx={{mx:1, my:1,px:2,py:2}}>
                                 <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}}>
@@ -223,7 +233,7 @@ export function PlayerPage() {
                                     <Paper elevation={3} sx={{mx:10,my:2,px:1, py:1}} style={{background: "#E3CAA5" }}>
                                         <Typography component="h2" color="#557C55">Awarded {player.roundResult} points!</Typography>
                                         <img style={{ height: "80px", width: "auto" }} src={PepeHappy} alt="Happy Pepe"></img>
-                                        <Typography component="h2" color="#557C55">You have {gameStats.points} pts</Typography>
+                                        <Typography component="h2" color="#557C55">You have {player.score} pts</Typography>
                                     </Paper>
                                     <Typography component="h4" color="primary">Choose a player to attack:</Typography>
                                     <ButtonGroup
@@ -255,7 +265,7 @@ export function PlayerPage() {
                                     <Paper elevation={3} sx={{mx:10,my:2,px:1, py:1}} style={{background: "#E3CAA5" }}>
                                         <Typography component="h2" color="#557C55">No points earned :(</Typography>
                                         <img style={{ height: "80px", width: "auto" }} src={PepeSad} alt="Sad Pepe"></img>
-                                        <Typography component="h2" color="#557C55">You have {gameStats.points} pts</Typography>
+                                        <Typography component="h2" color="#557C55">You have {player.score} pts</Typography>
                                     </Paper>
                                     <Typography component="h3" color="#9B0000">Opponents are choosing your fate...</Typography>
                                 </Paper>
@@ -278,16 +288,17 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            <ThemeProvider theme={islandTheme}>
-           
+        
+            <ThemeProvider theme={islandTheme}>           
             {!gameStats.gameStarted ? 
             <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
                 <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>
                     <Typography component='h3' color="#557C55">{waitingText}</Typography> 
                 </Paper>
             </Box>
-            : (gameOver ? <GameOver /> : 
-                (gameStats.health === 0 ? <h3>You're dead, lol.</h3> :
+            : (gameStats.gameOver ? <GameOver /> : 
+                (player.score <= 0 ? <h3>You're dead, lol.</h3> :
+
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
                     <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
