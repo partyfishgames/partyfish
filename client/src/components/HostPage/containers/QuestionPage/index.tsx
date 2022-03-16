@@ -1,6 +1,7 @@
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import {createTheme, ThemeProvider, Paper} from '@mui/material';
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import socketService from '../../../../services/socketService';
@@ -12,6 +13,37 @@ const selectQuestion = (state: { question: any }) => state.question; // select f
 const selectPlayerLists = (state: { playerLists: any; }) => state.playerLists; // select for player lists state
 
 export function QuestionPage() {
+
+    const islandTheme = createTheme({
+        typography: {
+            fontFamily: [
+                'Syne Mono', 
+                'monospace'
+            ].join(','),
+            fontSize: 22,
+            fontWeightRegular:500,
+        },
+        palette: {
+            primary: {
+                main: "#A6CF98", // light green
+            },
+            secondary: {
+                main: "#E3CAA5", // light brown
+            }, 
+            success: {
+                main: "#557C55", // dark green
+            },
+            error: {
+                main: "#D29D2B", // burnt yellow
+            },
+            info: {
+                main: "#85F4FF" // cyan blue
+            },
+            background:{
+                paper: "#AD8B73", // dark brown
+            }
+        },
+    });
 
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
@@ -119,12 +151,32 @@ export function QuestionPage() {
 
     return (
         <div>
-            <h3>{question[0]}</h3>
-            <LinearProgressWithLabel />
-            <h3>Answered:</h3>
-            {Object.keys(playerAnswers).map((name: any) =>
-                <h4>{name}</h4>)
-            }
+            <ThemeProvider theme={islandTheme}>
+                <Box bgcolor='#D29D2B' sx={{my:3}}>
+                    <Box sx={{mx:3, my:3, py:3}}>
+                        <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                            <Box sx={{mx:8, my:3}}>
+                                 <Paper elevation={3} sx={{py: 2, px: 2}}>
+                                    <Typography component='h3'color="#85F4FF" >{question[0]}</Typography>
+                                </Paper>
+                            </Box>
+                            <Box sx={{mx:4, my:2}}>
+                                 <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#85F4FF"}}>
+                                    <LinearProgressWithLabel />
+                                </Paper>
+                            </Box>
+                            <Box sx={{mx:10, my:3}}>
+                                 <Paper elevation={3} sx={{py: 2, px: 2}}>
+                                    <Typography component="h3" color="#85F4FF">Answered:</Typography>
+                                    {Object.keys(playerAnswers).map((name: any) =>
+                                        <Typography component='h4' color='primary'>{name} </Typography>)
+                                    }
+                                </Paper>
+                            </Box>
+                        </Paper>
+                    </Box>
+                </Box>
+            </ThemeProvider>
         </div>
     );
 }
