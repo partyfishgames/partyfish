@@ -55,6 +55,7 @@ export async function newQuestion() {
         return question;
 
     } catch (err) {
+        console.log('here inside questionUtil')
         console.log("Failure: ", err.message);
         return ['None'];
     }
