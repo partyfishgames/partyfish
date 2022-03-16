@@ -287,8 +287,7 @@ export function PlayerPage() {
 
     return (
         <div style={{ textAlign: "center" }}>
-            <ThemeProvider theme={islandTheme}>
-           
+          <ThemeProvider theme={islandTheme}>           
             {!gameStats.gameStarted ? 
             <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
                 <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background:"#D29D2B"}}>
@@ -297,7 +296,6 @@ export function PlayerPage() {
             </Box>
             : (gameStats.gameOver ? <GameOver /> : 
                 (player.score <= 0 ? <h3>You're dead, lol.</h3> :
-                 
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
                     <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
