@@ -11,21 +11,23 @@ import { FaMedal } from "react-icons/fa";
 import FadeIn from 'react-fade-in';
 
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores
-const selectHealth = (state: { health: any }) => state.health; // select for player healths
-const selectQuestion = (state: { question: any }) => state.question; // select for game stats
+const selectQuestion = (state: { question: any }) => state.question; // select for round question
+const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
+const selectPlayersList = (state: { playerLists: any; }) => state.playerLists; // select for player lists state 
 
 export function LeaderboardPage() {
 
-    const attackDamage = 50;
-
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
-    const [attacks, setAttacks] = useState<string[][]>([]);
-    const [gameOver, setGameOver] = useState(false);
+    const [attacks, setAttacks] = useState<string[][]>([]); // hold the round's current attacks for display
 
-    const playerScores = useAppSelector(selectScores); // Grab our player's scores from global state
-    const playerHealth = useAppSelector(selectHealth);
-    const question = useAppSelector(selectQuestion); // Grab our current round question from the global state
+    // subscribe variables to changes in the global state from dispatched actions
+    const playerLists = useAppSelector(selectPlayersList);
+    const playerScores = useAppSelector(selectScores); 
+    const question = useAppSelector(selectQuestion); 
+    const gameStats = useAppSelector(selectGameStats);
+
+    const attackDamage = 50; // each player attack results in reduction of 50 points
 
     // This function is called when the host starts the next game round
     const newRound = async () => {
@@ -36,53 +38,52 @@ export function LeaderboardPage() {
             alert(err);
         });
 
-        // Update state variables to display the new host screen
+        // Update state variables to display the question screen
         if (joined) {
             console.log(joined);
-            dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleGameStarted', payload: true }); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true }); // Dispatch action to change playerList
+            dispatch({ type: 'question/set', payload: joined }); // Set the round's question
+            dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Start the round
+            dispatch({ type: 'gameStats/setRoundNumber', payload: gameStats.roundNumber + 1}); // Increment round number
         }
     }
 
-    // This function is called when the host starts the next game round
+    // This function is called when the game ends 
     const endGame = async () => {
 
-        // Get our socket and tell the server to start a new round
+        // Get our socket and tell the server to end the game
         const socket: any = socketService.socket;
         const result = await gameService.endGame(socket).catch((err) => {
             alert(err);
         });
 
-        // Update state variables to display the new host screen
+        // Update state variables to display the end of the game
         if (result) {
             console.log(result);
-            setGameOver(true);
+            dispatch({ type: 'gameStats/setGameOver', payload: true }); // End the game
         }
     }
 
-    // Listen for the player join event from roomService and update our state if one joins
+    // Listen for the player attack event from gameService and update player score
     const handleAttack = () => {
         if (socketService.socket)
             gameService.onAttack(socketService.socket, (attacker, target) => {
 
-                const playerHealthObj = Object();
-                playerHealthObj[target] = playerHealth[target] - attackDamage;
-                dispatch({ type: 'health/addHealth', payload: playerHealthObj });
+                const playerScoresObj = Object();
+                playerScoresObj[target] = playerScores[target] - attackDamage;
+                dispatch({ type: 'scores/addScore', payload: playerScoresObj });
+                setAttacks([...attacks, [attacker, target]]); // set the round's attacks for display
 
-                setAttacks([...attacks, [attacker, target]]);
-
+                if (playerScoresObj[target] <= 0) {
+                    // player died 
+                    let alive = playerLists.alivePlayers.filter((player: string) => player !== target);
+                    dispatch({ type: 'playerLists/setAlivePlayers', payload: alive});
+                }
             });
     };
 
-    const remainingPlayers = () => {
-        return Object.entries(playerHealth).filter((a: any) => a[1] > 0);
-    }
-
     useEffect(() => {
 
-        // Constantly listen for player attacks on leaderboard
-        handleAttack();
+        handleAttack(); // Constantly listen for player attacks on leaderboard
 
         return () => {
             socketService.socket?.removeAllListeners("attack_received");
@@ -96,15 +97,9 @@ export function LeaderboardPage() {
             <h3>Correct Answer: {question[parseInt(question[4])]}</h3>
             <Grid container direction="row" justifyContent="center" alignItems="flex-start">
                 <Grid item md={3}>
-                    <h2>Score <VscGraph /></h2>
+                    <h2>Score<VscGraph /> / Health<RiHeartFill /></h2>
                     {Object.entries(playerScores).sort((a: any, b: any) => b[1] - a[1]).map((entry, idx) => (
                         <h4>{idx + 1}. {entry[0]} {entry[1]}</h4>
-                    ))}
-                </Grid>
-                <Grid item md={3}>
-                    <h2>Health <RiHeartFill /></h2>
-                    {Object.entries(playerHealth).sort((a: any, b: any) => b[1] - a[1]).map((entry) => (
-                        <h4>{entry[0]} {entry[1]}</h4>
                     ))}
                 </Grid>
                 <Grid item md={3}>
@@ -113,7 +108,7 @@ export function LeaderboardPage() {
                 </Grid>
             </Grid>
 
-            {remainingPlayers().length > 1 ?
+            {playerLists.alivePlayers.length > 1 && gameStats.roundNumber < 10 ?
                 <Button onClick={newRound}>Next Round</Button>
                 :
                 <Button onClick={endGame}>See Results!</Button>
@@ -151,7 +146,7 @@ export function LeaderboardPage() {
 
     return (
         <div>
-            {gameOver ? <FinalResults /> : <RoundLeaderboard />}
+            {gameStats.gameOver ? <FinalResults /> : <RoundLeaderboard />}
         </div>
     );
 }

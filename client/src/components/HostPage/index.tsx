@@ -8,7 +8,7 @@ import { useAppDispatch } from "../../hooks";
 import { QuestionPage } from "./containers/QuestionPage/index";
 import { LeaderboardPage } from "./containers/LeaderboardPage";
 
-const selectPlayerList = (state: { playerList: any; }) => state.playerList; // select for player list state 
+const selectPlayersList = (state: { playerLists: any; }) => state.playerLists; // select for player lists state 
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
 export function HostPage() {
@@ -39,23 +39,24 @@ export function HostPage() {
                 paper: "#AD8B73", // dark brown
             }
         },
-        }
-    );
-
-    const initialHealth = 250;
-
+    });
+    
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
-    const playerList = useAppSelector(selectPlayerList); // playerList is subscribed to changes from dispatched actions
-    const gameStats = useAppSelector(selectGameStats); // Grab our game code from the global state
+    // subscribe variables to changes in the global state from dispatched actions
+    const playerLists = useAppSelector(selectPlayersList); 
+    const gameStats = useAppSelector(selectGameStats); 
 
-    // Listen for the player join event from roomService and update our state if one joins
+    const initialScore = 250; // every player begins with a score of 250
+
+    // Listen for the player join event from roomService and update state if one joins
     const handlePlayerJoin = () => {
         if (socketService.socket)
             roomService.onPlayerJoin(socketService.socket, (playerNames) => {
                 console.log(playerNames);
-                dispatch({ type: 'playerList/set', payload: playerNames }); // Dispatch action to change playerList
-                dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to change playerList
+                dispatch({ type: 'playerLists/setAllPlayers', payload: playerNames }); // Dispatch action to set all players
+                dispatch({ type: 'playerLists/setAlivePlayers', payload: playerNames }); // All players start alive
+                dispatch({ type: 'gameStats/setNumPlayers', payload: playerNames.length }); // Dispatch action to set number of players
             });
     };
 
@@ -74,24 +75,23 @@ export function HostPage() {
         // Update state variables to display the new host screen
         if (joined) {
             console.log(joined);
-            const playerHealthsObj = Object();
-            playerList.forEach((username : string) => {
-                playerHealthsObj[username] = initialHealth;
+
+            const playerScoresObj = Object();
+            playerLists.allPlayers.forEach((username : string) => {
+                playerScoresObj[username] = initialScore;
             });
-            dispatch({ type: 'health/addHealth', payload: playerHealthsObj });
-            dispatch({ type: 'question/set', payload: joined }); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleGameStarted', payload: true}); // Dispatch action to change playerList
-            dispatch({ type: 'gameStats/toggleRoundInProgress', payload: true}); // Dispatch action to change playerList
+
+            dispatch({ type: 'scores/addScore', payload: playerScoresObj }); // Set all players' scores to 250 at the start 
+            dispatch({ type: 'question/set', payload: joined }); // Set the round's question
+            dispatch({ type: 'gameStats/setGameStarted', payload: true}); // Start the game
+            dispatch({ type: 'gameStats/setRoundInProgress', payload: true}); // Start a round
+            dispatch({ type: 'gameStats/setRoundNumber', payload: 1}); // Increment round number
+            dispatch({ type: 'gameStates/setGameType', payload: 'Trivalry'}); // EVENTUALLY THIS WILL CHANGE WHEN MORE GAMES AVAILABLE
         }
     } 
 
-    
-
     useEffect(() => {
-
-        // Constantly listen for player joining
-        handlePlayerJoin();
-
+        handlePlayerJoin(); // Constantly listen for players joining
     });
 
     function WaitingRoom() {
@@ -133,7 +133,7 @@ export function HostPage() {
                                         <Box sx={{mx:1, my:1}} >
                                             <Paper elevation={3} sx={{py: 2, }} style={{background: "#E3CAA5", height: "350px"}}>
                                                 <Typography color="error">Players</Typography>
-                                                {playerList.map((player: string) =>
+                                                {playerLists.allPlayers.map((player: string) =>
                                                     <Typography key={player}>{player}</Typography>
                                                 )}
                                             </Paper>
@@ -142,7 +142,8 @@ export function HostPage() {
                                     <Grid item xs={12}>
                                         <Box sx={{mx:6, my:1}}>
                                             <Paper elevation={3} sx={{py: 1, px: 1}} style={{background: "#557C55"}}>
-                                                <Button onClick={startGame} variant={playerList.length > 2 ? "contained" : "outlined"} disabled={playerList.length > 2 ? false : true}>
+                                                <Button onClick={startGame} variant={playerLists.allPlayers.length > 2 ? "contained" : "outlined"} disabled={playerLists.allPlayers.length > 2 ? false : true}>
+
                                                     <Typography color="error">
                                                         Start Game
                                                     </Typography>
