@@ -1,7 +1,7 @@
 # Partyfish
 
-<img alt="npm" src="https://img.shields.io/npm/v/socket.io">
-<img alt="npm" src="https://img.shields.io/npm/v/react">
+<a href="https://socket.io/"><img alt="npm" src="https://img.shields.io/npm/v/socket.io?label=socket.io"></a>
+<a href="https://reactjs.org/"><img alt="npm" src="https://img.shields.io/npm/v/react?label=react"></a>
 <a href="https://github.com/partyfishgames/partyfish/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/partyfishgames/partyfish"></a>
 <a href="https://github.com/partyfishgames/partyfish/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/partyfishgames/partyfish"></a>
 <a href="https://github.com/partyfishgames/partyfish/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/partyfishgames/partyfish"></a>
