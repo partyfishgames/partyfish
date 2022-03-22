@@ -1,6 +1,13 @@
-# Partyfish Prototype
+# Partyfish
 
-This is our initial prototype for partyfish code setup
+<a href="https://socket.io/"><img alt="npm" src="https://img.shields.io/npm/v/socket.io?label=socket.io"></a>
+<a href="https://reactjs.org/"><img alt="npm" src="https://img.shields.io/npm/v/react?label=react"></a>
+<a href="https://github.com/partyfishgames/partyfish/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/partyfishgames/partyfish?color=green"></a>
+<a href="https://github.com/partyfishgames/partyfish/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/partyfishgames/partyfish"></a>
+<a href="https://github.com/partyfishgames/partyfish/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/partyfishgames/partyfish"></a>
+
+This repo contains the client and server code for our open source game Partyfish which can be played on [our hosted version](partyfish.app).
+
 
 ## Installation
 
@@ -13,6 +20,15 @@ npm install
 cd server
 npm install
 ```
+
+## Client Setup (.env)
+To allow the client to connect with the server, you must create a `.env` file to specify where the client must connect to. A `.env.sample` file is provided with the variable
+
+```bash
+REACT_APP_PARTYFISH_SERVER=localhost:9000
+```
+This is setup to interact with the server code locally, as when the server is run it will run locally on port 9000. If you were running the server from another url for example, you would need to replace `localhost:9000` with that destination url.
+
 
 ## Usage
 
