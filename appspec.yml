@@ -3,8 +3,11 @@ os: linux
 files:
   - source: /
     destination: /home/server/partyfish
-    overwrite: true
 hooks:
+  BeforeInstall:
+    - location: deploy/clean_workspace.sh
+      timeout: 300
+      runas: server
   AfterInstall:
     - location: deploy/install_dependencies.sh
       timeout: 300
