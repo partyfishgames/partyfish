@@ -278,9 +278,20 @@ export function PlayerPage() {
 
     function GameOver() {
         return (
-            <div>
-                <Typography component="h1" color="#557C55">Thanks for playing!</Typography>
-                <img src={PepeHappy} style={{ height: "100px", width: "auto" }} alt="pepefinish"></img>
+            <div> 
+                <Box sx={{mx:1, my:1,px:2,py:2}}>
+                    <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}}>  
+                        <Box sx={{mx:1, my:1,px:2,py:2}}>
+                            <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background: "#E3CAA5"}}>             
+                                <Typography component="h1" color="#557C55">Thanks for playing!</Typography>
+                                <Paper elevation={3} sx={{mx:6,my:1,px:1, py:1}} style={{background: "#85F4FF"}}>
+                                    <img src={PepeHappy} style={{ height: "100px", width: "auto" }} alt="pepefinish"></img>
+                                </Paper>
+                                <Typography component="h1" color="#557C55">Come back soon!!!</Typography>
+                            </Paper>
+                        </Box>
+                    </Paper>
+                </Box>
             </div>
         )
     }
@@ -295,7 +306,20 @@ export function PlayerPage() {
                 </Paper>
             </Box>
             : (gameStats.gameOver ? <GameOver /> : 
-                (player.score <= 0 ? <h3>You're dead, lol.</h3> :
+                (player.score <= 0 ? 
+                <Box sx={{mx:1, my:1,px:2,py:2}}>
+                    <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}}>  
+                        <Box sx={{mx:1, my:1,px:2,py:2}}>
+                            <Paper elevation={3} sx={{mx:1,my:1,px:1, py:1}} style={{background: "#E3CAA5"}}>             
+                                <Typography component="h1" color="#557C55">You died... get better at trivia</Typography>
+                                <Paper elevation={3} sx={{mx:6,my:1,px:1, py:1}} style={{background: "#9B0000"}}>
+                                    <img src={PepeSad} style={{ height: "100px", width: "auto" }} alt="pepedied"></img>
+                                </Paper>
+                                <Typography component="h1" color="#557C55">Better luck next time!</Typography>
+                            </Paper>
+                        </Box>
+                    </Paper>
+                </Box> :
                 (gameStats.roundInProgress && question[0] !== 'NONE' ? <TriviaQuestion /> :
                     (!gameStats.roundInProgress && question[0] === 'NONE' ? <RoundResult /> :
                     <Box bgcolor="#AD8B73" sx={{mx:1, my:1,px:2,py:2}}>
