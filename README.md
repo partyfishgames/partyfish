@@ -27,7 +27,7 @@ To allow the client to connect with the server, you must create a `.env` file to
 ```bash
 REACT_APP_PARTYFISH_SERVER=localhost:9000
 ```
-This is setup to interact with the server code locally, as when the server is run it will run locally on port 9000.
+This is setup to interact with the server code locally, as when the server is run it will run locally on port 9000. If you were running the server from another url for example, you would need to replace `localhost:9000` with that destination url.
 
 
 ## Usage
