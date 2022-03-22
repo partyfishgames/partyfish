@@ -23,7 +23,7 @@ export async function newQuestion() {
         const data = await client.send(new QueryCommand(params));
         // const data = await client.query(params).promise()
         console.log("Success");
-        question = data.Items;
+  
         question = [data.Items[0]['qText']['S'], data.Items[0]['ans1']['S'], data.Items[0]['ans2']['S'], data.Items[0]['ans3']['S'], Number(data.Items[0]['correct']['S']) + 1]
 
         console.log(question);
