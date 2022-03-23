@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Typography, Box, Paper, Button, Grid, createTheme, ThemeProvider, typographyClasses} from "@mui/material";
 import { useAppDispatch } from "../../../../hooks";
 import gameService from "../../../../services/gameService";
 import socketService from "../../../../services/socketService";
@@ -8,6 +8,7 @@ import { RiSwordLine, RiHeartFill } from "react-icons/ri";
 import { VscGraph } from "react-icons/vsc";
 import { FaMedal } from "react-icons/fa";
 
+
 import FadeIn from 'react-fade-in';
 
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores
@@ -16,6 +17,39 @@ const selectGameStats = (state: { gameStats: any }) => state.gameStats; // selec
 const selectPlayersList = (state: { playerLists: any; }) => state.playerLists; // select for player lists state 
 
 export function LeaderboardPage() {
+
+
+    const islandTheme = createTheme({
+        typography: {
+            //color:"#AD8B72", 
+            fontFamily: [
+                'Syne Mono', 
+                'monospace'
+            ].join(','),
+            fontSize: 22,
+            fontWeightRegular:500,
+        },
+        palette: {
+            primary: {
+                main: "#A6CF98", // light green
+            },
+            secondary: {
+                main: "#E3CAA5", // light brown
+            }, 
+            success: {
+                main: "#557C55", // dark green
+            },
+            error: {
+                main: "#D29D2B", // burnt yellow
+            },
+            info: {
+                main: "#85F4FF" // cyan blue
+            },
+            background:{
+                paper: "#AD8B73", // dark brown
+            }
+        },
+    });
 
     const dispatch = useAppDispatch(); // included in any component that dispatches actions
 
@@ -121,25 +155,33 @@ export function LeaderboardPage() {
     // Only goes down to h4, the top 3 get special header sizes
     function SizedHeaderFromIndex(idx: number, entry: any) {
         if (idx === 1) {
-            return (<h1><FaMedal color="gold" /> {idx}. {entry[0]} {entry[1]}</h1>)
+            return (<Box sx={{mb:1}}><Typography variant='h4' color="#AD8B73"><FaMedal color="gold" /> {idx}.{entry[0]} {entry[1]}</Typography></Box>)
         } else if (idx === 2) {
-            return (<h2><FaMedal color="silver" /> {idx}. {entry[0]} {entry[1]}</h2>)
+            return (<Box sx={{mb:1}}><Typography variant='h5' color="#AD8B73"><FaMedal color="silver" /> {idx}.{entry[0]} {entry[1]}</Typography></Box>)
         } else if (idx === 3) {
-            return (<h3><FaMedal color="bronze" /> {idx}. {entry[0]} {entry[1]}</h3>)
+            return (<Box sx={{mb:1}}><Typography variant='h6' color="#AD8B73"><FaMedal color="#E3CAA5" /> {idx}.{entry[0]} {entry[1]}</Typography></Box>)
         } else {
-            return (<h4>{idx + 1}. {entry[0]} {entry[1]}</h4>)
+            return (<Box sx={{mb:1}}><Typography variant='h6' color="#AD8B73">{idx + 1}. {entry[0]} {entry[1]}</Typography></Box>)
         }
     }
 
     function FinalResults() {
         return (
             <div>
-                <h4>Final Results</h4>
-                <FadeIn delay={500} transitionDuration={1000}>
-                    {Object.entries(playerScores).sort((a: any, b: any) => b[1] - a[1]).map((entry, idx) => (
-                        SizedHeaderFromIndex(idx + 1, entry)
-                    ))}
-                </FadeIn>
+                <ThemeProvider theme={islandTheme}>
+                    <Box bgcolor='#D29D2B' sx={{my:3}}>
+                        <Box sx={{mx:3, my:3, py:3}}>
+                            <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                                <Paper elevation={3} sx={{py: 2, px: 2, mb:2, mx:6}} style={{background: "#85F4FF"}}><Typography variant='h4'color='#D29D2B'>Final Results</Typography></Paper>
+                                    <FadeIn delay={500} transitionDuration={1000}>                  
+                                            {Object.entries(playerScores).sort((a: any, b: any) =>b[1] - a[1]).map((entry, idx) => (
+                                               SizedHeaderFromIndex(idx + 1, entry)
+                                            ))}
+                                    </FadeIn>
+                            </Paper>
+                        </Box>
+                    </Box>
+                </ThemeProvider>
             </div>
         )
     }
