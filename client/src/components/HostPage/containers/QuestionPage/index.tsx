@@ -1,7 +1,7 @@
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import {createTheme, ThemeProvider, Paper} from '@mui/material';
+import {createTheme, ThemeProvider, Paper, Grid } from '@mui/material';
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks";
 import socketService from '../../../../services/socketService';
@@ -11,6 +11,7 @@ const selectAnswers = (state: { answers: any }) => state.answers; // select for 
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores
 const selectQuestion = (state: { question: any }) => state.question; // select for round question
 const selectPlayerLists = (state: { playerLists: any; }) => state.playerLists; // select for player lists state
+const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
 export function QuestionPage() {
 
@@ -51,7 +52,8 @@ export function QuestionPage() {
     const playerScores = useAppSelector(selectScores); 
     const playerAnswers = useAppSelector(selectAnswers); 
     const question = useAppSelector(selectQuestion); 
-    const playerLists = useAppSelector(selectPlayerLists); 
+    const playerLists = useAppSelector(selectPlayerLists);
+    const gameStats = useAppSelector(selectGameStats); 
 
     // Timer functionality for gameplay => begin the timer 
     const [timeRemaining, setTimeRemaining] = useState(30);
@@ -161,6 +163,11 @@ export function QuestionPage() {
                 <Box bgcolor='#D29D2B' sx={{my:3}}>
                     <Box sx={{mx:3, my:3, py:3}}>
                         <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#557C55"}}>
+                            <Box sx={{mx:12, my:3}}>
+                                 <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: '#D29D2B'}}>
+                                    <Typography component='h3'color="#557C55"> Round {gameStats.roundNumber} </Typography>
+                                </Paper>
+                            </Box>
                             <Box sx={{mx:8, my:3}}>
                                  <Paper elevation={3} sx={{py: 2, px: 2}}>
                                     <Typography component='h3'color="#85F4FF" >{question[0]}</Typography>
@@ -171,13 +178,34 @@ export function QuestionPage() {
                                     <LinearProgressWithLabel />
                                 </Paper>
                             </Box>
-                            <Box sx={{mx:10, my:3}}>
-                                 <Paper elevation={3} sx={{py: 2, px: 2}}>
-                                    <Typography component="h3" color="#85F4FF">Answered:</Typography>
-                                    {Object.keys(playerAnswers).map((name: any) =>
-                                        <Typography component='h4' color='primary'>{name} </Typography>)
-                                    }
-                                </Paper>
+                            <Box sx={{mx:8, my:1,}}>
+                                <Grid container
+                                        direction="column"
+                                        
+                                        justifyContent="center"
+                                        alignItems="center"
+                                    > 
+                                    <Grid item xs={8}>
+                                        <Box sx={{mx:1, my:1}} >
+                                            <Paper elevation={3} sx={{py: 1,px:1}}>
+                                                <Typography component="h3" color="#85F4FF">Answered:</Typography>
+                                                {Object.keys(playerAnswers).map((name: any) =>
+                                                    <Typography component='h4' color='primary'>{name} </Typography>)
+                                                }
+                                            </Paper>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={8}>
+                                        <Box sx={{ my:1, mx:1}} >
+                                            <Paper elevation={3} sx={{py: 1, px:1 }}> 
+                                                <Typography component="h3" color="#85F4FF">Hurry up:</Typography>
+                                                {playerLists.alivePlayers.filter((player: string) => !Object.keys(playerAnswers).includes(player)).map((player: any) => 
+                                                    <Typography component='h4' color='primary'>{player} </Typography>)
+                                                }
+                                            </Paper>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
                             </Box>
                         </Paper>
                     </Box>
