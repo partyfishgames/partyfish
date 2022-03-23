@@ -1,4 +1,4 @@
-import { Typography, Box, Paper, Button, Grid, createTheme, ThemeProvider, typographyClasses} from "@mui/material";
+import { Typography, Box, Paper, Button, Grid, createTheme, ThemeProvider,} from "@mui/material";
 import { useAppDispatch } from "../../../../hooks";
 import gameService from "../../../../services/gameService";
 import socketService from "../../../../services/socketService";
