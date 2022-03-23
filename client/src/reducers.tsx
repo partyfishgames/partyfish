@@ -20,6 +20,7 @@ const initialPlayerLists: any = {
     allPlayers: [],
     alivePlayers: [],
     deadPlayers: [],
+    correctPlayers: [],
 }; // holds the lists of players 
 
 const initialScores: any = {}; // holds the players' current scores
@@ -64,6 +65,9 @@ export function playerListsReducer(state = initialPlayerLists, action: any) {
         }
         case 'playerLists/setDeadPlayers': {
             return {...state, deadPlayers: action.payload}
+        }
+        case 'playerLists/setCorrectPlayers': {
+            return {...state, correctPlayers: action.payload}
         }
         default:
             return state

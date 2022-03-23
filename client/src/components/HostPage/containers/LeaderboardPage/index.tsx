@@ -32,19 +32,28 @@ export function LeaderboardPage() {
     // This function is called when the host starts the next game round
     const newRound = async () => {
 
-        // Get our socket and tell the server to start a new round
-        const socket: any = socketService.socket;
-        const joined = await gameService.startRound(socket, 2).catch((err) => {
-            alert(err);
-        });
+        if (attacks.length === playerLists.correctPlayers.length) {
+            // all attacks completed
 
-        // Update state variables to display the question screen
-        if (joined) {
-            console.log(joined);
-            dispatch({ type: 'question/set', payload: joined }); // Set the round's question
-            dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Start the round
-            dispatch({ type: 'gameStats/setRoundNumber', payload: gameStats.roundNumber + 1}); // Increment round number
+            // Get our socket and tell the server to start a new round
+            const socket: any = socketService.socket;
+            const joined = await gameService.startRound(socket, 2).catch((err) => {
+                alert(err);
+            });
+
+            // Update state variables to display the question screen
+            if (joined) {
+                console.log(joined);
+                dispatch({ type: 'question/set', payload: joined }); // Set the round's question
+                dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Start the round
+                dispatch({ type: 'gameStats/setRoundNumber', payload: gameStats.roundNumber + 1}); // Increment round number
+                dispatch({ type: 'playerLists/setCorrectPlayers', payload: [] }); // reset the correct players for the new round
+            }
+        } else {
+            // not all attacks completed
+            alert('All players must select their attacks before the new round can be started. Happy Attacking!');
         }
+
     }
 
     // This function is called when the game ends 
@@ -94,6 +103,7 @@ export function LeaderboardPage() {
     function RoundLeaderboard() {
         return (<div style={{ textAlign: "center" }}>
             <h1>Leaderboard</h1>
+            <h3>Round Number: {gameStats.roundNumber}</h3>
             <h3>Correct Answer: {question[parseInt(question[4])]}</h3>
             <Grid container direction="row" justifyContent="center" alignItems="flex-start">
                 <Grid item md={3}>

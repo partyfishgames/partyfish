@@ -79,14 +79,17 @@ export function QuestionPage() {
             console.log(playerAnswers);
 
             let correctAnswers = Object();
+            let correctPlayers = [];
             let score = 0;
 
             for(const player in playerAnswers) {
                 if (playerAnswers[player][0] === parseInt(question[4])) {
                     score = 50 + Math.floor((playerAnswers[player][1] / 30) * 50);
+                    correctPlayers.push(player);
                 } else {
                     score = 0;
                 }
+
                 correctAnswers[player] = score;
 
                 const previousScore = playerScores[player] || 0;
@@ -95,7 +98,10 @@ export function QuestionPage() {
                 dispatch({ type: 'scores/addScore', payload:  scorePayload }); // update player scores 
             }
 
+            dispatch({ type: 'playerLists/setCorrectPlayers', payload: correctPlayers });
+
             console.log(correctAnswers);
+            console.log(correctPlayers);
             console.log(playerScores);
             console.log(playerLists.alivePlayers);
 

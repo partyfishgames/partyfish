@@ -137,7 +137,7 @@ export function PlayerPage() {
                     dispatch({ type: 'gameStats/setRoundInProgress', payload: false });
                     dispatch({ type: 'player/setRoundResult', payload: result });
                     dispatch({ type: 'player/setScore', payload: player.score + result });
-                });
+                }); 
         };
 
         // Listen for an attack from another player event
