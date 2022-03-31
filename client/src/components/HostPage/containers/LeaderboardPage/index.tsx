@@ -205,7 +205,7 @@ export function LeaderboardPage() {
         } else if (idx === 3) {
             return (<Box sx={{mb:1}}><Typography variant='h6' color="#AD8B73"><FaMedal color="bronze" /> {idx}. {entry[0]} {entry[1]}</Typography></Box>)
         } else {
-            return (<Box sx={{mb:1}}><Typography variant='h6' color="#AD8B73">{idx + 1}. {entry[0]} {entry[1]}</Typography></Box>)
+            return (<Box sx={{mb:1}}><Typography variant='h6' color="#AD8B73">{idx}. {entry[0]} {entry[1]}</Typography></Box>)
         }
     }
 
