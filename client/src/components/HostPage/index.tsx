@@ -92,6 +92,10 @@ export function HostPage() {
 
     useEffect(() => {
         handlePlayerJoin(); // Constantly listen for players joining
+
+        return () => {
+            socketService.socket?.removeAllListeners("on_player_join");
+        };
     });
 
     function WaitingRoom() {
