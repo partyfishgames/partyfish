@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import "./App.css";
 import socketService from "./services/socketService";
-import { HomePage } from "./components/HomePage";
-import { PlayerPage } from "./components/PlayerPage";
-import { HostPage } from "./components/HostPage";
+import { HomePage } from "./components/Home";
+import { PlayerPage } from "./components/Trivalry/PlayerPage/index";
 import { useAppSelector } from "./hooks";
+import { GamePage } from "./components/Home/game";
 
 const selectPlayer = (state: { player: any }) => state.player;
 
@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="app">
       {player.username === '' ? <HomePage /> : 
-      player.username === "Host" ? <HostPage /> : <PlayerPage />}
+      player.username === "Host" ? <GamePage /> : <PlayerPage />}
     </div>
   );
 }

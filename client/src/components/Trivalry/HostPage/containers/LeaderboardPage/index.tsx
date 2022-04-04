@@ -1,8 +1,8 @@
 import { Button, Grid, Typography, createTheme, ThemeProvider, Paper, Box } from "@mui/material";
-import { useAppDispatch } from "../../../../hooks";
-import gameService from "../../../../services/gameService";
-import socketService from "../../../../services/socketService";
-import { useAppSelector } from "../../../../hooks";
+import { useAppDispatch } from "../../../../../hooks";
+import gameService from "../../../../../services/gameService";
+import socketService from "../../../../../services/socketService";
+import { useAppSelector } from "../../../../../hooks";
 import { useEffect, useState } from "react";
 import { RiSwordLine, RiHeartFill } from "react-icons/ri";
 import { FaMedal } from "react-icons/fa";

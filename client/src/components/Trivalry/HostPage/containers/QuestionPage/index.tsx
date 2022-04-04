@@ -3,9 +3,9 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import {createTheme, ThemeProvider, Paper, Grid } from '@mui/material';
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks";
-import socketService from '../../../../services/socketService';
-import gameService from '../../../../services/gameService';
+import { useAppDispatch, useAppSelector } from "../../../../../hooks";
+import socketService from '../../../../../services/socketService';
+import gameService from '../../../../../services/gameService';
 
 const selectAnswers = (state: { answers: any }) => state.answers; // select for player answers
 const selectScores = (state: { scores: any }) => state.scores; // select for player scores

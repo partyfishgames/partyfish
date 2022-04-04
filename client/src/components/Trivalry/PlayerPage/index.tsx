@@ -5,12 +5,12 @@ import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import {Box, createTheme, ThemeProvider, Typography, Paper } from "@mui/material";
 
-import gameService from "../../services/gameService";
-import socketService from "../../services/socketService";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import gameService from "../../../services/gameService";
+import socketService from "../../../services/socketService";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
 
-import PepeSad from "../../images/pepesad.png";
-import PepeHappy from "../../images/pepehappy.png";
+import PepeSad from "../../../images/pepesad.png";
+import PepeHappy from "../../../images/pepehappy.png";
 
 const selectQuestion = (state: { question: string }) => state.question; // select for question
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
