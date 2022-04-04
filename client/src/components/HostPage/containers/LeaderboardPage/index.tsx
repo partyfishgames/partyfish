@@ -109,6 +109,9 @@ export function LeaderboardPage() {
 
                 const playerScoresObj = Object();
                 playerScoresObj[target] = playerScores[target] - attackDamage;
+                if (playerScoresObj[target] < 0) {
+                    playerScoresObj[target] = 0; //sets the player's score to 0 if less than 0
+                }
                 dispatch({ type: 'scores/addScore', payload: playerScoresObj });
                 setAttacks([...attacks, [attacker, target]]); // set the round's attacks for display
 

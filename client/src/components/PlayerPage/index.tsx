@@ -145,7 +145,12 @@ export function PlayerPage() {
             if (socketService.socket)
                 gameService.onAttacked(socketService.socket, (attacker) => {
                     console.log(attacker + 'attacked you');
-                    dispatch({ type: 'player/attackPlayer', payload: player.score - 50});
+                    //limit player.score to 0 instead of decreasing to negative values
+                    let attack_payload = player.score - 50;
+                    if (attack_payload < 0) {
+                        attack_payload = 0;
+                    }
+                    dispatch({ type: 'player/attackPlayer', payload: attack_payload});
                 });
         };
 
