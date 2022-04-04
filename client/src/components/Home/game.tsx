@@ -1,4 +1,4 @@
-import { Box, List, ListItem, ListItemButton, ListItemText, Paper, Typography } from "@mui/material";
+import { Box, List, ListItem, ListItemButton, ListItemText, Paper } from "@mui/material";
 import { useAppSelector } from "../../hooks";
 import { useAppDispatch } from "../../hooks";
 import { TrivalryHostPage } from "../Trivalry/HostPage";
