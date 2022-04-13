@@ -1,17 +1,17 @@
 import { Box, Button, Grid, createTheme, ThemeProvider, Typography, Paper } from "@mui/material";
 import { useEffect } from "react";
-import { useAppSelector } from "../../hooks";
-import roomService from "../../services/roomService";
-import gameService from "../../services/gameService";
-import socketService from "../../services/socketService";
-import { useAppDispatch } from "../../hooks";
+import { useAppSelector } from "../../../hooks";
+import roomService from "../../../services/roomService";
+import gameService from "../../../services/gameService";
+import socketService from "../../../services/socketService";
+import { useAppDispatch } from "../../../hooks";
 import { QuestionPage } from "./containers/QuestionPage/index";
 import { LeaderboardPage } from "./containers/LeaderboardPage";
 
 const selectPlayersList = (state: { playerLists: any; }) => state.playerLists; // select for player lists state 
 const selectGameStats = (state: { gameStats: any }) => state.gameStats; // select for game stats
 
-export function HostPage() {
+export function TrivalryHostPage() {
 
     const islandTheme = createTheme({
         typography: {
