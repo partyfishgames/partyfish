@@ -128,7 +128,7 @@ export function TrivalryHostPage() {
                                             <Paper elevation={3} sx={{py: 2, px: 2}} style={{background: "#E3CAA5", height: "350px"}}>
                                                 <Typography color="error">Room Code</Typography>
                                                 <Box sx={{mx:1, my:14}}>
-                                                    <Typography fontSize = "32">{gameStats.gameCode}</Typography>
+                                                    <Typography fontSize={32} >{gameStats.gameCode}</Typography>
                                                 </Box>
                                             </Paper>
                                         </Box>
