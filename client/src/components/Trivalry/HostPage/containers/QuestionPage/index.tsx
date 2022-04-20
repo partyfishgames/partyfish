@@ -101,6 +101,7 @@ export function QuestionPage() {
             }
 
             dispatch({ type: 'playerLists/setCorrectPlayers', payload: correctPlayers });
+            dispatch({ type: 'playerLists/setAttackers', payload: correctPlayers }); // potential attackers on others
 
             console.log(correctAnswers);
             console.log(correctPlayers);

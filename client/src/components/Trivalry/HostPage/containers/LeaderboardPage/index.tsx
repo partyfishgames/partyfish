@@ -78,6 +78,7 @@ export function LeaderboardPage() {
                 dispatch({ type: 'gameStats/setRoundInProgress', payload: true }); // Start the round
                 dispatch({ type: 'gameStats/setRoundNumber', payload: gameStats.roundNumber + 1}); // Increment round number
                 dispatch({ type: 'playerLists/setCorrectPlayers', payload: [] }); // reset the correct players for the new round
+                dispatch({ type: 'playerLists/setAttackers', payload: [] }); // reset the correct players for the new round
             }
         } else {
             // not all attacks completed
@@ -108,6 +109,10 @@ export function LeaderboardPage() {
             gameService.onAttack(socketService.socket, (attacker, target) => {
 
                 const playerScoresObj = Object();
+
+                let potentialAttackers = playerLists.attackers.filter((player: string) => player !== attacker);
+                dispatch({ type: 'playerLists/setAttackers', payload: potentialAttackers}); // waiting for their attacks 
+
                 playerScoresObj[target] = playerScores[target] - attackDamage;
                 if (playerScoresObj[target] < 0) {
                     playerScoresObj[target] = 0; //sets the player's score to 0 if less than 0
@@ -174,6 +179,14 @@ export function LeaderboardPage() {
                                                 </Paper>
                                             </Box>
                                             {attacks.map(attack => <Typography color="#557C55">{attack[0]} <RiSwordLine color="#9B0000" /> {attack[1]}</Typography>)}
+                                        </Grid>
+                                        <Grid item md={3} sx={{mx:3}}>
+                                            <Box sx={{mx:1, my:1}}>
+                                                <Paper elevation={3} sx={{py: 1, px: 3}} style={{background: "#E3CAA5"}}>
+                                                    <Typography color="#557C55">Waiting for Attack:</Typography>
+                                                </Paper>
+                                            </Box>
+                                            {playerLists.attackers.map((attacker: string) => <Typography color="#557C55">{attacker}</Typography>)}
                                         </Grid>
                                     </Grid>
                                 </Paper>
