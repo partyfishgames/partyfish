@@ -25,7 +25,11 @@ export function HomePage() {
     // This function is called when the user types something in the room code textfield
     // and updates the state
     const handleRoomCodeChange = (e: React.ChangeEvent<any>) => {
-        setPlayerRoomCode(e.target.value);
+        if(e.target.value.length <= 4)
+            setPlayerRoomCode(e.target.value);
+        else{
+            e.target.value = e.target.value.substring(0,3);
+        }
     }
 
     // This function is called when the user types something in the username textfield
@@ -49,7 +53,7 @@ export function HomePage() {
         // Update state variables to display the new host screen
         if (joined) {
 
-            // Update global redux state's room code and set user to 'Host' 
+            // Update global redux state's room code and set user to 'Host'
             dispatch({ type: 'gameStats/setGameCode', payload: joined });
             dispatch({ type: 'player/setUsername', payload: 'Host' });
         }
